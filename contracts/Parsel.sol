@@ -1,11 +1,15 @@
 contract Parsel {
-	string carats;
-	string value;
-	address countryOfOrigin;
+	public string carats;
+	public string value;
 
-	function Parsel(string _carats, string _value, address _countryOfOrigin) {
+	struct Participants {
+		public Particpant origin;
+	}
+	public Participants participants;
+
+	function Parsel(string _carats, string _value, address _origin) {
 		carats = _carats;
 		value = _value;
-		countryOfOrigin = _countryOfOrigin;
+		participants.origin = _origin;
 	}
 }

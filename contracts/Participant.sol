@@ -1,13 +1,18 @@
-import Authority from "./Authority"
-
+/*
+	Particpants are member countries that participate in the Kimberley Process.
+*/
 contract Participant {
-	string name;
-	string contactDetails;
-	Authority authority;
+	enum Status {
+		Active, Suspended 
+	}
+	public Status status;
 
-	function Participant(Authority _authority, string _name, string _contactDetails) {
-		authority = _authority;
+	public string name
+	function Participant(string _name) {
 		name = _name;
-		contactDetails = _contactDetails;
+	}
+
+	function changeStatus(Status status) {
+		
 	}
 }
