@@ -1,0 +1,5 @@
+contract Authority {
+	function Authority() {
+
+	}
+}

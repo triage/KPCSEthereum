@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ether Wheel</title>
+    <meta name="description" content="Earn more ether by placing bets into the Ether Wheel. This is an Ethereum distributed application (or dapp) that functions like a simple lottery system."
+    <meta name="keywords" content="ether,wheel,ethereum,dapp,distributed,application">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta charset="UTF-8">
+
+    <meta property="og:title" content="Ether Wheel">
+    <meta property="og:image" content="./assets/ethereumLogo.png">
+    <meta property="og:description" content="Earn more ether by placing bets into the Ether Wheel. This is an Ethereum distributed application (or dapp) that functions like a simple lottery system.">
+
+    <base href="/">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/styles.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+  </head>
+
+  <body ng-app="ether-wheel" ng-cloak>
+    <div class="container" style="height: 100%;">
+      <div class="jumbotron">
+        <h1>
+          <img src="./assets/ethereumLogo.png" class="ethereum-logo">
+          <strong>ether wheel<span style="color: #5cb85c;">.io</span></strong>
+        </h1>
+
+        <p>
+          Each time an Ether Wheel is filled, all of the ether* in the wheel will be awarded to a randomly-selected participant. The more ether you contribute, the higher your odds of being the winner. For example, contributing 0.2 ether to the 1-ether wheel would give you a 20% chance of winning it all.
+        </p>
+      </div>
+
+      <div ng-controller="WheelCtrl as vm" class="row">
+        <div class="wheel-area col-md-6" ng-show="::vm.isConnected">
+          <canvas id="wheel" height="260px"></canvas>
+          <div class="wheel-text">
+            <span class="current-ether">{{ vm.selectedWheel.getAdjustedBalance(vm.selectedAccount) | currency:"":2 }}</span>
+            of {{ vm.selectedWheel.goal }} ether
+            <div class="percentage">({{ vm.selectedWheel.getAdjustedBalance(vm.selectedAccount) / vm.selectedWheel.goal * 100 | number:0 }}% full)</div>
+          </div>
+        </div>
+
+        <div class="row col-md-6" ng-class="::{ 'col-md-offset-3' : !vm.isConnected }">
+          <ul class="panel panel-default nav nav-pills col-xlg-6" style="display: flex; justify-content: space-between;" ng-if="::vm.isConnected">
+            <li
+              role="presentation"
+              ng-repeat="wheel in vm.wheels"
+              ng-class="{ active : vm.selectedWheel === wheel }"
+            >
+              <a href="" ng-click="vm.selectWheel(wheel)">
+                <small>Ξ </small>{{ wheel.goal | number:1 }} Wheel
+              </a>
+            </li>
+          </ul>
+
+          <div class="col-xlg-6">
+            <div class="panel panel-default" ng-if="::vm.isConnected">
+              <div class="panel-heading">
+                Your Contribution
+                <select class="form-control pull-right account-selector" style="height: auto; width: auto;" ng-model="vm.selectedAccount" ng-change="vm.onAccountChanged()">
+                  <option ng-repeat="account in vm.accounts | orderBy:account" value="{{ account }}">
+                    {{ account.toString() }} (<small>Ξ </small>{{ vm.getAccountBalance(account).toString() | number:2}})
+                  </option>
+                </select>
+              </div>
+              <div class="panel-body">
+                You currently have <strong style="font-size: 1.3em"><small>Ξ </small>{{ vm.selectedWheel.getContribution(vm.selectedAccount) | number:2 }}</strong> in this wheel and <strong style="font-size: 1.3em"><small>Ξ </small>{{ vm.getAccountBalance(vm.selectedAccount).toString() | number:2 }}</strong> in your account.
+
+                <div class="row">
+                  <div class="col-xs-7">
+                    <rzslider
+                      rz-slider-model="vm.selectedWheel.desiredContribution"
+                      rz-slider-options="{ floor: 0, ceil: (vm.selectedWheel.goal - vm.selectedWheel.balance + vm.selectedWheel.getContribution(vm.selectedAccount)).toFixed(2), step: vm.selectedWheel.increment, precision: 2, onChange: vm.onSliderChanged }"
+                    >
+                    </rzslider>
+                  </div>
+
+                  <div class="col-xs-5" style="position: relative;">
+                    <button
+                      class="btn btn-success btn-set-contribution"
+                      ng-disabled="vm.selectedWheel.getContribution(vm.selectedAccount) == vm.selectedWheel.desiredContribution"
+                      ng-click="vm.setContribution()"
+                      >
+                      <span ng-hide="vm.selectedWheel.getAdjustedBalance(vm.selectedAccount) == vm.selectedWheel.goal">
+                        Set Contribution to <small>Ξ </small>{{ vm.selectedWheel.desiredContribution | number:2}}
+                      </span>
+
+                      <span ng-show="vm.selectedWheel.getAdjustedBalance(vm.selectedAccount) == vm.selectedWheel.goal">
+                        Complete the Wheel! (<small>Ξ </small>{{ vm.selectedWheel.desiredContribution | number:2}})
+                      </span>
+                    </button>
+                  </div>
+
+                  <p class="subtext pull-right" style="margin-top: 10px; margin-right: 15px; margin-bottom: 0; text-align: right;">
+                    This would give you a <span style="font-weight:bold">{{ vm.selectedWheel.desiredContribution / vm.selectedWheel.goal * 100 | number:0 }}%</span> chance of winning all <small>Ξ </small>{{ vm.selectedWheel.goal }}*.
+                  </p>
+
+                  <div style="clear: both; padding: 13px 20px 0px 20px; font-size: 0.9em; text-align: center;">You can also set your contribution by sending ether directly to a wheel with your preferred Ethereum client. This wheel's address is <code>{{ vm.selectedWheel.address }}</code> (<i class="fa fa-lock" style="font-size: 0.8em; margin-right: 2px;"></i> <a href="https://live.ether.camp/account/{{ vm.selectedWheel.address.substring(2) }}/contract">view verified source code</a>).</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xlg-6">
+            <div class="panel panel-default recent-winners-box" ng-if="::vm.isConnected">
+              <div class="panel-heading">
+                Recent Winners
+              </div>
+              <div class="panel-body">
+                <div ng-if="vm.selectedWheel.recentWins.length === 0" style="margin:30px;"><em>This wheel is still on its first round. You could be the first winner!</em></div>
+                <table class="table table-striped">
+                  <tbody>
+                    <tr ng-repeat="winner in vm.selectedWheel.recentWins | orderBy:'winner[1]':true">
+                      <td>
+                        <span ng-if="winner[0] == vm.selectedAccount"><i class="fa fa-star" style="color: #f0ad4e; margin-right: 7px;"></i>You <small>({{ winner[0] }})</small></span>
+                        <span ng-if="winner[0] != vm.selectedAccount">{{ winner[0] }}</span>
+                        <span class="pull-right">
+                          {{ vm.moment(winner[1].toString(), 'X').fromNow() }}
+                        </span>
+                        <br>
+                        <span class="subtext">contributed <small>Ξ </small>{{ vm.web3.fromWei(winner[2], 'ether').toString() | number:2 }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel panel-danger not-connected-error" ng-if="::!vm.isConnected" style="margin-bottom: 100px;">
+            <div class="panel-heading"><i class="fa fa-exclamation-circle"></i> ERROR: NOT CONNECTED TO ETHEREUM</div>
+            <div class="panel-body">
+              <p>
+                There was a problem connecting to the Ethereum network. Your Ethereum client needs to accept cross-origin requests from this domain by using the following command:
+              </p>
+              <br>
+              <code class="well-sm">
+                geth --rpc --rpccorsdomain "http://etherwheel.io"
+              </code>
+              <br>
+              <p style="padding-top: 30px;">
+                To put any ether into the wheel, you'll also need to make sure you unlock the account that you want to transfer funds with (e.g. using the --unlock command in geth). If you prefer not unlocking an account, we also provide instructions for sending ether directly to a source code-verified ethereum address.
+              </p>
+
+              <div style="margin-top: 20px;">
+                <span style="font-weight: bold;">When you're ready, just refresh the page to begin.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <span class="subtext pull-right" style="margin-right: 30px; clear: both;">*1% of the total winnings are credited to the developer.</span>
+      </div>
+    </div>
+
+    <div class="info-boxes">
+      <div class="container">
+        <div class="panel panel-default info-box">
+          <header><i class="fa fa-question-circle"></i>How do I use this application?</header>
+          <p>
+            Ether Wheel is a distributed application running on the <a href="http://www.ethereum.org">Ethereum network</a>. Each wheel has a designated capacity. Users can put as much ether as they want into the wheel. When the wheel is filled up, a winner is randomly selected, weighted by the amount of ether each participant contributed. All of the ether in the wheel is then sent to that account. In other words, the amount of ether that you put in is directly correlated with your chances of winning the entire pot.
+          </p>
+        </div>
+
+        <div class="panel panel-default info-box">
+          <header><i class="fa fa-lock"></i>How can I trust that this site works the way it claims?</header>
+          <p>
+            You can read the code for yourself! The smart-contract used by Ether Wheel is open source and verified on  <a href="https://live.ether.camp/">Ether.camp</a>. This website is just a front-end for that smart-contract. If you don't feel safe unlocking your account for this website, you can still interact with the smart-contract <em>directly</em> by sending ether to its account address using your preferred Ethereum client. See the 'Your Contribution' form above for more details.
+          </p>
+        </div>
+
+        <div class="panel panel-default info-box">
+          <header><i class="fa fa-undo"></i>Can my ether be refunded?</header>
+          <p>
+            Yes! Before the wheel fills up and a winner is chosen, you can raise or lower your contribution at any time. However, once the wheel has been filled, the ether will be sent to the winner, and this cannot be undone.
+          </p>
+        </div>
+
+        <div class="panel panel-default info-box">
+          <header><i class="fa fa-user-secret"></i>Is it possible to cheat?</header>
+          </p>The short answer: no.</p>
+          <p>
+            The long answer: those of you who are cryptographically-savvy may notice that Ether Wheel uses a block hash as the seed to semi-randomly determine the winner. Mathematically-speaking, there does exist a slim chance for a miner using this dapp to abandon a block that does not declare them as the winner. However, since the reward for mining a block is 5 ether, and all ether wheels have a capacity of 5 ether or less, there is absolutely no incentive for a miner to attempt performing this cheat, since it would result in a net loss of ether for them.
+          </p>
+        </div>
+
+        <div class="panel panel-default info-box">
+          <header><i class="fa fa-bitcoin"></i>Do you benefit from this?</header>
+          <p>
+            The Ether Wheel smart-contract does send me (the developer) 1% of the pool at the time that a winner is declared, in order to compensate me for hosting/domain name fees and my development time. <i class="fa fa-smile-o"></i> Other than that, Ether Wheel only benefits its users. Keep in mind that ether is <em>not</em> a currency and should not be treated as such. The Ethereum Project defines ether as "an internal token that is used to pay for computation time."
+          </p>
+        </div>
+
+        <div class="panel panel-default info-box">
+          <header><i class="fa fa-life-ring"></i>How can I support this site?</header>
+          <p>
+            If you're a developer, feel free to make suggestions or pull requests on GitHub to improve this dapp. If you have feedback or questions, you can reach me on reddit at <a href="http://www.reddit.com/u/doppio">/u/doppio</a> If you just want to show your approval and support the Ethereum community, why not a few finney to my Ethereum account? <i class="fa fa-smile-o"></i></i><br><code>0xEeD1614CDEfBBdAd2cC8Af7AF2fd4beB93F1cCAc</code>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="/vendor.min.js"></script>
+    <script src="/app.min.js"></script>
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-75010183-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  </body>
+</html>

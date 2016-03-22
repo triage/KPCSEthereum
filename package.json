@@ -1,0 +1,33 @@
+{
+  "name": "kpcs",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A implementation of The Kimberley Process Certification System on Ethereum",
+  "license": "MIT",
+  "devDependencies": {
+    "bower": "^1.7.7",
+    "gulp": "^3.9.1",
+    "gulp-angular-filesort": "^1.1.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-if": "^2.0.0",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-ng-annotate": "^2.0.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sass": "^2.2.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.5.3",
+    "gulp-util": "^3.0.7",
+    "http-server": "^0.6.1",
+    "main-bower-files": "^2.11.1",
+    "streamqueue": "^1.1.1"
+  },
+  "scripts": {
+    "postinstall": "bower install",
+    "prestart": "npm install",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "compression": "^1.6.1",
+    "express": "^4.13.4"
+  }
+}
