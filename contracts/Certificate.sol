@@ -2,10 +2,11 @@ import * as Participant from "./Participant";
 import * as Issuer from "./Issuser";
 import * as Parsel from "./Parsel";
 import * as Authority from "./Authority";
+import * as Owned from "./Owned"
 
 contract Certificate {
 
-	address _certificateAddress;
+	address public owner;
 
 	enum State {
 		/*
@@ -16,7 +17,7 @@ contract Certificate {
 		*/
 		Pending, Issued, Expired
 	}
-	State state = State.Pending;
+	State public state = State.Pending;
 
 	struct Dates {
 		//date the certificate is created + requested
@@ -31,41 +32,39 @@ contract Certificate {
 		//default expiration date of the certificate, exercised only if shipment never verified by importing authority
 		uint public expiration;
 	}
-	dates Dates = Dates(now, 0, 0, 0)
+	Dates public dates = Dates(now, 0, 0, 0)
 
 	//Participants in the KP: member countries of source and destination
 	struct Participants {
-		mapping(address => Participant) public origin;
-		mapping(address => Participant) public source;
-		mapping(address => Participant) public destination;
+		address public origin; //the declared origin of the goods
+		address public source; //the country we are exporting from
+		address public destination; //the country we are importing to
 	}
 	Participants participants;
 
 	//Authorities: issuing and importing
 	struct Authorities {
-		mapping(address => Issuer) public issuing;
-		mapping(address => TransitAuthority) public exporting;
-		mapping(address => TransitAuthority) public importing;
+		address public issuer;
+		address public exporter;
+		address public importer;
 	}
-	public Authorities authorities;
+	Authorities public authorities;
 
 	//the parties to the transaction: importer and exporter
 	struct Parties {
-		mapping(address => Party) public exporter;
-		mapping(address => Party) public importer;
+		address public exporter;
+		address public importer;
 	}
 	Parties parties;
 
-	mapping(address => Parsel) parsels;
+	mapping(address => Parsel) public parsels;
 
 	struct Signatures {
-		public uint issuer;
-		public uint exporter;
-		public uint importer;
-		public uint importingAuthority;
-		public uint exportingAuthority;
+		bool public exporter;
+		bool public importer;
+		bool public issuer;
 	}
-	const uint8 signaturesRequiredToValidate = 3;
+	Signatures public signatures;
 
 	event Requested(Certificate certificate);
 	event Issued(Certificate certificate);
@@ -73,39 +72,58 @@ contract Certificate {
 	event Exported(Certificate certificate);
 	event Imported(Certificate certificate);
 
-    function Certificate(address _importer, address _exporter, address _destination, mapping(address => Parsel) _parsels) {
-    	issuer = msg.sender;
-    	importer = _importer;
-    	exporter = _exporter;
-    	destination = _destination;
+	/*
+	Certificates should be created by the exporter: the party in possession of the goods.
+	params:
+	- importer - importing Party
+	- exporter - exporting Party
+	- participantOrigin - KPCS Participant (member country) the goods were sourced _from_ ... likely the country of geological origin
+	- participantSource - KPCS Participant (member country) the goods are being sent from, which has a relatinoship to an Issuer
+	- participantDestination - KPCS Participant (member country) the goods are being sent to, which has a relationship to an Issuer.
+	*/
+    function Certificate(address _importer, address _exporter, address _participantOrigin, address _participantSource, address _participantDestination, mapping(address => Parsel) _parsels) {
+    	owner = msg.sender;
+    	parties = Parties(_importer, _exporter);
+    	participants = Participants(_participantOrigin, _participantSource, _participantDestination);
     	parsels = _parsels;
-    	signatureCount = 0;
-    	_certificateAddress = msg.sender;
-
+    	owner = msg.sender;
+    	signatures = Signatures(msg.sender, false, false);
     }
 
-    function create() {
-    	signatureCount = 0;
-    }
-
-    function sign(address signer) {
-    	signatureCount++;
-    	if(signatureCount == signaturesRequired) {
-    		state = State.Issued;
-    	}
-    }
-
-    function issue() returns (bool) {
-    	if (msg.sender != issuer) {
+    function sign() returns (bool signed) {
+    	if(msg.sender == authorities.issuer) {
+    		if(signatures.issuer == false) {
+    			return false;
+    		}
+    		signatures.issuer = true;
+    	} else if(msg.sender == authorities.exporter) {
+    		if(signatures.exporter == false) {
+    			return false;
+    		}
+    		signatures.exporter = true;
+    	} else if(msg.sender == authorities.importer) {
+    		if(signatures.importer == false) {
+    			return false;
+    		}
+    		signatures.importer = true;
+    	} else {
     		throw;
     	}
 
-    	Issue(issuer, importer, exporter, destination, parsels)
-    	return true
+    	if(hasRequiredSignatures()) {
+    		state = State.Issued;
+    		issue();
+    	} else {
+    		return true;
+    	}
+    }
+
+    function hasRequiredSignatures() returns (bool isComplete) {
+    	return (signatures.issuer == true && signatures.exporter == true && signatures.importer == true);
     }
 
     function isValid returns (bool) {
-    	return true
+    	return (state == State.Issued);
     }
 }
 

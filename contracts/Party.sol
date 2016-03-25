@@ -4,14 +4,14 @@ contract Party {
 	enum State {
 		Applied, Active, Suspended
 	}
-	public State state;
 
-	public string name;
-	public string contactDetails;
-	mapping(address => Authority) public authority;
+	State public state;
+	string public name;
+	string public contactDetails;
+	address public owner
 
-	function Party(Authority _authority, string _name, string _contactDetails) {
-		authority = _authority;
+	function Party(string _name, string _contactDetails) {
+		owner = msg.sender;
 		name = _name;
 		contactDetails = _contactDetails;
 	}

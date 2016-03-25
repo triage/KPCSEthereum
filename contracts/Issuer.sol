@@ -1,13 +1,21 @@
-import Authority from "./Authority"
+import Authority from "./Authority";
+import Agent from "./Agent";
 
-contract Issuer is Authority {
-	public string name;
-	public Authority authority;
-	public address _address;
+struct Issuer is Authority {
 
-	function Issuser(Authority _authority, string _name) {
-		authority = _authority;
-		name = _name;
-		_address = msg.sender;
+	struct IssuerAgent {
+		/*
+			Agents can:
+			- create Parties
+			- sign certificates
+		*/
+		string public name;
+		string public contactDetails;
+		uint public dateCreated;
 	}
+
+	string public name;
+	Authority public authority;
+	address public issuerAddress;
+	mapping(address => Agent) public agents;
 }
