@@ -1,7 +1,7 @@
 import Agent from "./Agent";
 import User from "./User"
 
-contract Authority is User {
+contract Administrator is User {
 	/*
 		Authorities can:
 		- create Issuers

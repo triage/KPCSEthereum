@@ -1,9 +1,13 @@
 import Issuer from "./Issuers";
+import Administrator from "./Administrator"
+import ParticipantAgent from './ParticipantAgent'
 
 /*
 	Particpants are member countries that participate in the Kimberley Process.
+	They have ParticipantAgents, which are entities (e.g. the Minister of Mines
+	and Mining), which have the power to issue certificates
 */
-contract Participant {
+contract Participant is Administrator {
 	enum Status {
 		Applied, Active, Suspended 
 	}
@@ -11,7 +15,12 @@ contract Participant {
 	Status public  status;
 	address public owner;
 	string public name;
-	mapping(address => Issuer) public issuers;
+
+	struct Authorities {
+		address public importing;
+		address public exporting;
+	}
+	Authorities public authorities; 
 
 	function Participant(string _name, uint _status) {
 		name = _name;

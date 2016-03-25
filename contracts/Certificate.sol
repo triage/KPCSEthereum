@@ -44,7 +44,6 @@ contract Certificate {
 
 	//Authorities: issuing and importing
 	struct Authorities {
-		address public issuer;
 		address public exporter;
 		address public importer;
 	}
@@ -60,9 +59,8 @@ contract Certificate {
 	mapping(address => Parsel) public parsels;
 
 	struct Signatures {
-		bool public exporter;
-		bool public importer;
-		bool public issuer;
+		bool public exportingAuthority;
+		bool public importingAuthority;
 	}
 	Signatures public signatures;
 
@@ -87,7 +85,7 @@ contract Certificate {
     	participants = Participants(_participantOrigin, _participantSource, _participantDestination);
     	parsels = _parsels;
     	owner = msg.sender;
-    	signatures = Signatures(msg.sender, false, false);
+    	signatures = Signatures(false, false);
     }
 
     function sign() returns (bool signed) {
@@ -119,7 +117,7 @@ contract Certificate {
     }
 
     function hasRequiredSignatures() returns (bool isComplete) {
-    	return (signatures.issuer == true && signatures.exporter == true && signatures.importer == true);
+    	return (signatures.importingAuthority == true && signatures.exportingAuthority == true);
     }
 
     function isValid returns (bool) {

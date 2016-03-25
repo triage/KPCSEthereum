@@ -1,3 +1,0 @@
-contract TransitAuthority is Authority {
-
-}

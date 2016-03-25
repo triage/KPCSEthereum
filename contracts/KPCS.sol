@@ -2,14 +2,14 @@ import Certificate from "./Certificate"
 import Issuer from "./Issuer"
 import Party from "./Party"
 import Participant from "./Participant"
-import Authority from "./Authority"
+import Administrator from "./Administrator"
 
 contract KPCS {
 
 	//Administrators
 	address public owner;
 
-	mapping(address: => Authority) public authorities
+	mapping(address: => Administrator) public administrators
 
 	//Issuers of certificates. Entities, not individuals
 	mapping(address: => Issuer) public issuers
