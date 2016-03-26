@@ -1,10 +1,9 @@
-import Issuer from "./Issuers";
-import Administrator from "./Administrator"
-import ParticipantAgent from './ParticipantAgent'
+import {Administrator} from "./Administrator.sol";
+import {ParticipantAgent} from './ParticipantAgent.sol';
 
 /*
 	Particpants are member countries that participate in the Kimberley Process.
-	They have ParticipantAgents, which are entities (e.g. the Minister of Mines
+	They delegate ParticipantAgents, which are entities (e.g. the Minister of Mines
 	and Mining), which have the power to issue certificates
 */
 contract Participant is Administrator {
@@ -13,12 +12,12 @@ contract Participant is Administrator {
 	}
 	
 	Status public  status;
-	address public owner;
 	string public name;
 
+	//KPCS IV Each particpant should: (b) designate an Importing and an Exporting Authority(ies);
 	struct Authorities {
-		address public importing;
-		address public exporting;
+		address importing;
+		address exporting;
 	}
 	Authorities public authorities; 
 
@@ -35,7 +34,7 @@ contract Participant is Administrator {
 		return true;
 	}
 
-	function convertUIntToStatus(uint _status) returns (Status) {
+	function convertUIntToStatus(uint _status) private returns (Status) {
 		if (_status == 0) {
 			return Status.Applied;
 		} else if(_status == 1) {

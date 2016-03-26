@@ -1,7 +1,6 @@
-import Agent from "./Agent";
-import User from "./User"
+import {User} from "./User.sol";
 
-contract Administrator is User {
+contract Administrator {
 	/*
 		Authorities can:
 		- create Issuers
@@ -10,32 +9,38 @@ contract Administrator is User {
 		- change state of Certifiates
 	*/
 
-	mapping(address => Agent) public agents;
+	address public owner;
+	string public name;
+
+	function Administrator(string _name) {
+		name = _name;
+		owner = msg.sender;
+	}
 
 	function acceptUser(address applicant) returns (bool) {
-		if(msg.sender != super.owner) {
-			return false
+		if(msg.sender != owner) {
+			return false;
 		}
 		User(applicant).accept();
 	}
 
 	function rejectUser(address user) returns (bool) {
-		if(msg.sender != super.owner) {
-			return false
+		if(msg.sender != owner) {
+			return false;
 		}
 		User(user).reject();
 	}
 
 	function suspendUser(address user) returns (bool) {
-		if(msg.sender != super.owner) {
-			return false
+		if(msg.sender != owner) {
+			return false;
 		}
 		User(user).suspend();
 	}
 
 	function expelUser(address user) returns (bool) {
-		if(msg.sender != super.owner) {
-			return false
+		if(msg.sender != owner) {
+			return false;
 		}
 		User(user).expel();
 	}

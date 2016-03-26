@@ -1,5 +1,5 @@
-import User from "./User"
-import Certificate from "./Certificate"
+import {User} from "./User.sol";
+import {Certificate} from "./Certificate.sol";
 
 contract Party is User {
 	enum State {
@@ -10,17 +10,15 @@ contract Party is User {
 	string public name;
 	string public contactDetails;
 	address public authority;
-	address public owner
 	mapping(address => Certificate) public certificates;
 
-	function Party(_authority, string _name, string _contactDetails) {
-		owner = msg.sender;
+	function Party(address _authority, string _name, string _contactDetails) {
 		authority = _authority;
 		name = _name;
 		contactDetails = _contactDetails;
 	}
 
-	function createCertificate(address ) returns (Certificate) {
+	function createCertificate(address certificate) returns (Certificate) {
 
 	}
 }

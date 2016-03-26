@@ -1,30 +1,27 @@
-import Certificate from "./Certificate"
-import Issuer from "./Issuer"
-import Party from "./Party"
-import Participant from "./Participant"
-import Administrator from "./Administrator"
+import {Certificate} from "./Certificate.sol";
+import {Party} from "./Party.sol";
+import {Participant} from "./Participant.sol";
+import {KPCSAdministrator} from "./KPCSAdministrator.sol";
+import {Administrator} from "./Administrator.sol";
 
 contract KPCS {
 
 	//Administrators
 	address public owner;
 
-	mapping(address: => Administrator) public administrators
-
-	//Issuers of certificates. Entities, not individuals
-	mapping(address: => Issuer) public issuers
+	mapping(address => KPCSAdministrator) public administrators;
 
 	//Parties to a contract. Importer/exporter
-	mapping(address: => Party) public parties
+	mapping(address => Party) public parties;
 
 	//all certificates
-	mapping(address: => Certificate) public certificates
+	mapping(address => Certificate) public certificates;
 
 	//member countries
-	mapping(address: => Participant) public participants
+	mapping(address => Participant) public participants;
 
 	function KPCS() {
-		authorities[msg.sender] = Authority();
+		administrators[msg.sender] = new KPCSAdministrator("KPCS Genesis Administrator");
 		owner = msg.sender;
 	}
 }

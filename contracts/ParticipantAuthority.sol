@@ -1,5 +1,5 @@
-import Administrator from "./Administrator";
-import Agent from "./Agent";
+import "./Administrator.sol";
+import "./ParticipantAgent.sol";
 
 /*
 	ParticipantAuthorities are entities (e.g. The Minister of Mines and Mining),
@@ -10,16 +10,12 @@ import Agent from "./Agent";
 
 struct ParticipantAuthority is Administrator {
 	string public name;
-	address public owner;
 	address public participant;
 
 	mapping(address => ParticipantAgent) public agents;
 
 	function ParticipantAuthority(string _name, address _participant) {
-		owner = msg.sender;
 		name = _name;
 		participant = _participant;
 	}
-
-	mapping(address => Agent) public agents;
 }

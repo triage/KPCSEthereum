@@ -28,7 +28,7 @@ contract User {
 		if(msg.sender != authority) {
 			return false;
 		}
-		State = State.Accepted;
+		state = State.Accepted;
 		return true;
 	}
 
@@ -36,7 +36,7 @@ contract User {
 		if(msg.sender != authority) {
 			return false;
 		}
-		State = State.Rejected;
+		state = State.Rejected;
 		return true;
 	}
 
@@ -44,7 +44,7 @@ contract User {
 		if(msg.sender != authority) {
 			return false;
 		}
-		State = State.Suspended;
+		state = State.Suspended;
 		return true;
 	}
 
@@ -52,7 +52,7 @@ contract User {
 		if(msg.sender != authority) {
 			return false;
 		}
-		State = State.Expelled;
+		state = State.Expelled;
 		return true;
 	}
 

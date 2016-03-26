@@ -1,8 +1,5 @@
-import * as Participant from "./Participant";
-import * as Issuer from "./Issuser";
-import * as Parsel from "./Parsel";
-import * as Authority from "./Authority";
-import * as Owned from "./Owned"
+import "./Participant.sol";
+import "./Parsel.sol";
 
 contract Certificate {
 
@@ -21,46 +18,48 @@ contract Certificate {
 
 	struct Dates {
 		//date the certificate is created + requested
-		uint public creation;
+		uint creation;
 
 		//date the certificate is signed by all parties and is officially issued, becoming valid
-		uint public issue;
+		uint issue;
 
 		//date the shipment is certified by the importing authority
-		uint public completion;
+		uint completion;
 
 		//default expiration date of the certificate, exercised only if shipment never verified by importing authority
-		uint public expiration;
+		uint expiration;
 	}
-	Dates public dates = Dates(now, 0, 0, 0)
+	Dates public dates = Dates(now, 0, 0, 0);
 
 	//Participants in the KP: member countries of source and destination
 	struct Participants {
-		address public origin; //the declared origin of the goods
-		address public source; //the country we are exporting from
-		address public destination; //the country we are importing to
+		address origin; //the declared origin of the goods
+		address source; //the country we are exporting from
+		address destination; //the country we are importing to
 	}
 	Participants participants;
 
 	//Authorities: issuing and importing
 	struct Authorities {
-		address public exporter;
-		address public importer;
+		address exporter;
+		address importer;
 	}
 	Authorities public authorities;
 
 	//the parties to the transaction: importer and exporter
 	struct Parties {
-		address public exporter;
-		address public importer;
+		address exporter;
+		address importer;
 	}
 	Parties parties;
 
-	mapping(address => Parsel) public parsels;
+	address[] public parsels;
 
 	struct Signatures {
-		bool public exportingAuthority;
-		bool public importingAuthority;
+		uint importer;
+		uint exporter;
+		uint exporterAuthority;
+		uint importerAuthority;
 	}
 	Signatures public signatures;
 
@@ -76,53 +75,51 @@ contract Certificate {
 	- importer - importing Party
 	- exporter - exporting Party
 	- participantOrigin - KPCS Participant (member country) the goods were sourced _from_ ... likely the country of geological origin
-	- participantSource - KPCS Participant (member country) the goods are being sent from, which has a relatinoship to an Issuer
-	- participantDestination - KPCS Participant (member country) the goods are being sent to, which has a relationship to an Issuer.
+	- participantSource - KPCS Participant (member country) the goods are being sent from
+	- participantDestination - KPCS Participant (member country) the goods are being sent to
 	*/
-    function Certificate(address _importer, address _exporter, address _participantOrigin, address _participantSource, address _participantDestination, mapping(address => Parsel) _parsels) {
+    function Certificate(address _importer, address _exporter, address _participantOrigin, address _participantSource, address _participantDestination, address[] _parsels) {
     	owner = msg.sender;
     	parties = Parties(_importer, _exporter);
     	participants = Participants(_participantOrigin, _participantSource, _participantDestination);
     	parsels = _parsels;
     	owner = msg.sender;
-    	signatures = Signatures(false, false);
+    	signatures = Signatures(now, 0, 0, 0);
     }
 
     function sign() returns (bool signed) {
-    	if(msg.sender == authorities.issuer) {
-    		if(signatures.issuer == false) {
+    	if(msg.sender == authorities.exporter) {
+    		if(signatures.exporterAuthority > 0) {
     			return false;
     		}
-    		signatures.issuer = true;
-    	} else if(msg.sender == authorities.exporter) {
-    		if(signatures.exporter == false) {
-    			return false;
-    		}
-    		signatures.exporter = true;
+    		signatures.exporterAuthority = now;
     	} else if(msg.sender == authorities.importer) {
-    		if(signatures.importer == false) {
+    		if(signatures.importerAuthority > 0) {
     			return false;
     		}
-    		signatures.importer = true;
+    		signatures.importerAuthority = now;
+    	} else if(msg.sender == parties.importer) {
+    		if(signatures.importer > 0) {
+    			return false;
+    		}
+    		signatures.importer = now;
     	} else {
     		throw;
     	}
 
     	if(hasRequiredSignatures()) {
     		state = State.Issued;
-    		issue();
+    		Issued(this);
     	} else {
     		return true;
     	}
     }
 
     function hasRequiredSignatures() returns (bool isComplete) {
-    	return (signatures.importingAuthority == true && signatures.exportingAuthority == true);
+    	return (signatures.importerAuthority > 0 && signatures.exporterAuthority > 0 && signatures.importer > 0 && signatures.exporter > 0);
     }
 
-    function isValid returns (bool) {
+    function isValid() returns (bool) {
     	return (state == State.Issued);
     }
 }
-
-
