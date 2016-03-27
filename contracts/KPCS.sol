@@ -1,7 +1,7 @@
-import {Certificate} from "./Certificate.sol";
-import {Participant} from "./Participant.sol";
-import {KPCSAdministrator} from "./KPCSAdministrator.sol";
-import {Administrator} from "./Administrator.sol";
+import "Certificate";
+import "Participant";
+import "KPCSAdministrator";
+import "Administrator";
 
 contract KPCS {
 

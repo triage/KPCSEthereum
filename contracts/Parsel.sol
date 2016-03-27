@@ -1,4 +1,4 @@
-import {Participant} from "./Participant.sol";
+import "Participant";
 
 contract Parsel {
 	string public carats;

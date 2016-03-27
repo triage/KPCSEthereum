@@ -1,5 +1,5 @@
-import {Participant} from "./Participant.sol";
-import {Parsel} from "./Parsel.sol";
+import "Participant";
+import "Parsel";
 
 contract Certificate {
 
@@ -63,11 +63,11 @@ contract Certificate {
 	}
 	Signatures public signatures;
 
-	event Requested(Certificate indexed certificate);
-	event Issued(Certificate indexed certificate);
-	event Expired(Certificate indexed certificate);
-	event Exported(Certificate indexed certificate);
-	event Imported(Certificate indexed certificate);
+	event Requested(address indexed certificate);
+	event Issued(address indexed certificate);
+	event Expired(address indexed certificate);
+	event Exported(address indexed certificate);
+	event Imported(address indexed certificate);
 
 	/*
 	Certificates should be created by the exporter: the party in possession of the goods.

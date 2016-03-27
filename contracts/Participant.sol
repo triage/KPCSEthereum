@@ -1,6 +1,6 @@
-import {Administrator} from "./Administrator.sol";
-import {ParticipantAgent} from './ParticipantAgent.sol';
-import {KPCSAdministrator} from './KPCSAdministrator.sol';
+import "Administrator";
+import "ParticipantAgent";
+import "KPCSAdministrator";
 
 /*
 	Particpants are member countries that participate in the Kimberley Process.

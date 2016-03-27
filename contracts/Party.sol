@@ -1,5 +1,5 @@
-import {User} from "./User.sol";
-import {Certificate} from "./Certificate.sol";
+import "User";
+import "Certificate";
 
 contract Party is User("name", 0x0) {
 	enum State {

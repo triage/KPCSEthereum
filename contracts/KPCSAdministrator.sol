@@ -1,4 +1,4 @@
-import {Administrator} from "./Administrator.sol";
+import "Administrator";
 
 contract KPCSAdministrator is Administrator("name", 0x0) {
 	function KPCSAdministrator(string _name) {

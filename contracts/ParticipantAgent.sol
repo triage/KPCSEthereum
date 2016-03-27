@@ -1,6 +1,5 @@
-import {User} from "./User.sol";
-import {Certificate} from "./Certificate.sol";
-import {Administrator} from "./Administrator.sol";
+import "User";
+import "Administrator";
 
 contract ParticipantAgent is Administrator("name", 0x0) {
 	/*
@@ -33,7 +32,7 @@ contract ParticipantAgent is Administrator("name", 0x0) {
 		// 	return false;
 		// }
 
-		Certificate(_certificate).sign();
+		//Certificate(_certificate).sign();
 		return true;
 	}
 }
