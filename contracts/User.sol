@@ -4,20 +4,22 @@ contract User {
 	}
 	State public state;
 
-	event UserStateChanged(address user, address authority, uint state);
+	event UserStateChanged(address user, address administrator);
 
     address public owner = msg.sender;
-    address public authority;
+    address public administrator;
+    string public name;
     uint public creationTime = now;
 
-	function User(address _authority) {
+	function User(string _name, address _administrator) {
 		state = State.Applied;
-		authority = _authority;
-		UserStateChanged(owner, authority, uint(state));
+		name = _name;
+		administrator = _administrator;
+		UserStateChanged(this, administrator);
 	}
 
 	function changeState(uint _state) returns (bool) {
-		if(msg.sender != authority) {
+		if(msg.sender != administrator) {
 			return false;
 		}
 		state = convertUIntToState(_state);
@@ -25,7 +27,7 @@ contract User {
 	}
 
 	function accept() returns (bool) {
-		if(msg.sender != authority) {
+		if(msg.sender != administrator) {
 			return false;
 		}
 		state = State.Accepted;
@@ -33,7 +35,7 @@ contract User {
 	}
 
 	function reject() returns (bool) {
-		if(msg.sender != authority) {
+		if(msg.sender != administrator) {
 			return false;
 		}
 		state = State.Rejected;
@@ -41,7 +43,7 @@ contract User {
 	}
 
 	function suspend() returns (bool) {
-		if(msg.sender != authority) {
+		if(msg.sender != administrator) {
 			return false;
 		}
 		state = State.Suspended;
@@ -49,7 +51,7 @@ contract User {
 	}
 
 	function expel() returns (bool) {
-		if(msg.sender != authority) {
+		if(msg.sender != administrator) {
 			return false;
 		}
 		state = State.Expelled;

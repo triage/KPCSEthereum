@@ -1,5 +1,4 @@
 import {Certificate} from "./Certificate.sol";
-import {Party} from "./Party.sol";
 import {Participant} from "./Participant.sol";
 import {KPCSAdministrator} from "./KPCSAdministrator.sol";
 import {Administrator} from "./Administrator.sol";
@@ -10,9 +9,6 @@ contract KPCS {
 	address public owner;
 
 	mapping(address => KPCSAdministrator) public administrators;
-
-	//Parties to a contract. Importer/exporter
-	mapping(address => Party) public parties;
 
 	//all certificates
 	mapping(address => Certificate) public certificates;

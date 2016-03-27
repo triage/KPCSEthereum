@@ -1,5 +1,5 @@
-import "./Administrator.sol";
-import "./ParticipantAgent.sol";
+import {Administrator} from "./Administrator.sol";
+import {ParticipantAgent} from "./ParticipantAgent.sol";
 
 /*
 	ParticipantAuthorities are entities (e.g. The Minister of Mines and Mining),
@@ -8,7 +8,7 @@ import "./ParticipantAgent.sol";
 	(e.g. an employee at the Minister of Mines and Mining).
 */
 
-struct ParticipantAuthority is Administrator {
+struct ParticipantAuthority is Administrator("name", 0x0) {
 	string public name;
 	address public participant;
 

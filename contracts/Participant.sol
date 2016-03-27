@@ -1,18 +1,22 @@
 import {Administrator} from "./Administrator.sol";
 import {ParticipantAgent} from './ParticipantAgent.sol';
+import {KPCSAdministrator} from './KPCSAdministrator.sol';
 
 /*
 	Particpants are member countries that participate in the Kimberley Process.
 	They delegate ParticipantAgents, which are entities (e.g. the Minister of Mines
 	and Mining), which have the power to issue certificates
 */
-contract Participant is Administrator {
+contract Participant is Administrator("name", 0x0) {
 	enum Status {
 		Applied, Active, Suspended 
 	}
 	
 	Status public  status;
 	string public name;
+	KPCSAdministrator public administrator;
+
+	event Created(Participant participant, KPCSAdministrator administrator);
 
 	//KPCS IV Each particpant should: (b) designate an Importing and an Exporting Authority(ies);
 	struct Authorities {
@@ -21,9 +25,9 @@ contract Participant is Administrator {
 	}
 	Authorities public authorities; 
 
-	function Participant(string _name, uint _status) {
+	function Participant(string _name, address _administrator) {
 		name = _name;
-		status = convertUIntToStatus(_status);
+		administrator = KPCSAdministrator(_administrator);
 	}
 
 	function changeStatus(uint _status) returns (bool changed){

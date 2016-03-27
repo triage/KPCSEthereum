@@ -1,7 +1,7 @@
 import {User} from "./User.sol";
 import {Certificate} from "./Certificate.sol";
 
-contract Party is User {
+contract Party is User("name", 0x0) {
 	enum State {
 		Applied, Active, Suspended
 	}

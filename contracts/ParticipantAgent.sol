@@ -2,7 +2,7 @@ import {User} from "./User.sol";
 import {Certificate} from "./Certificate.sol";
 import {Administrator} from "./Administrator.sol";
 
-contract ParticipantAgent is Administrator {
+contract ParticipantAgent is Administrator("name", 0x0) {
 	/*
 		ParticipantAgents are entities delegated by Participants
 		(e.g. the Minister of Mines and Mining) the power to
@@ -15,11 +15,11 @@ contract ParticipantAgent is Administrator {
 	*/
 	
 	string public name;
-	address public authority;
 	uint public dateCreated = now;
+	Administrator public administrator;
 
-	function ParticipantAgent(string _name, address _authority) {
-		authority = _authority;
+	function ParticipantAgent(string _name, address _administrator) {
+		administrator = Administrator(_administrator);
 		name = _name;
 	}
 
