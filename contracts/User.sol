@@ -58,6 +58,10 @@ contract User {
 		return true;
 	}
 
+	function kill() {
+		if (msg.sender == owner) suicide(owner);
+	}
+
 	function convertUIntToState(uint _state) private returns (State) {
 		if (_state == 0) {
 			return State.Applied;

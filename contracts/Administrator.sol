@@ -46,6 +46,10 @@ contract Administrator is User("name", 0x0) {
 		User(user).expel();
 	}
 
+	function kill() {
+		if (msg.sender == owner) suicide(owner);
+	}
+
 	// function participantCreate() return (address) {
 	// 	if(super.state == State.Applied || msg.sender != super.owner)  {
 	// 		return 0x0
