@@ -37,6 +37,6 @@ contract KPCS {
 	}
 
 	function createCertificate() {
-		
+
 	}
 }

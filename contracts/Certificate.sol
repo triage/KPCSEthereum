@@ -1,5 +1,4 @@
 import "Participant";
-import "Parsel";
 
 contract Certificate {
 
@@ -53,8 +52,6 @@ contract Certificate {
 	}
 	Parties parties;
 
-	address[] public parsels;
-
 	struct Signatures {
 		uint importer;
 		uint exporter;
@@ -62,6 +59,14 @@ contract Certificate {
 		uint importerAuthority;
 	}
 	Signatures public signatures;
+
+	struct Parsel {
+		string carats;
+		string value;
+		address[] origins;
+	}
+	Parsel[] public parsels;
+
 
 	event Requested(address indexed certificate);
 	event Issued(address indexed certificate);
@@ -78,11 +83,10 @@ contract Certificate {
 	- participantSource - KPCS Participant (member country) the goods are being sent from
 	- participantDestination - KPCS Participant (member country) the goods are being sent to
 	*/
-    function Certificate(address _importer, address _exporter, address _participantOrigin, address _participantSource, address _participantDestination, address[] _parsels) {
+    function Certificate(address _importer, address _exporter, address _participantOrigin, address _participantSource, address _participantDestination) {
     	owner = msg.sender;
     	parties = Parties(_importer, _exporter);
     	participants = Participants(_participantOrigin, _participantSource, _participantDestination);
-    	parsels = _parsels;
     	owner = msg.sender;
     	signatures = Signatures(now, 0, 0, 0);
     }

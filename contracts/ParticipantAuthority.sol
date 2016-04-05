@@ -24,11 +24,11 @@ contract ParticipantAuthority is Administrator("name", 0x0) {
 	}
 
 	function registerAsParticipatingAgent(string _name) public returns (bool) {
-		if(registeredAddresses[address] == true) {
+		if(registeredAddresses[msg.sender] == true) {
 			return false;
 		}
 		agents[msg.sender] = new ParticipantAgent(_name, owner);
-		registeredAddresses[address] = true;
+		registeredAddresses[msg.sender] = true;
 		return true;
 	}
 }
