@@ -87,7 +87,7 @@ contract Certificate {
     	signatures = Signatures(now, 0, 0, 0);
     }
 
-    function sign() returns (bool signed) {
+    function sign() returns (bool) {
     	if(msg.sender == authorities.exporter) {
     		if(signatures.exporterAuthority > 0) {
     			return false;

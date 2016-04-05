@@ -18,6 +18,7 @@ contract ParticipantAgent is Administrator("name", 0x0) {
 	Administrator public administrator;
 
 	function ParticipantAgent(string _name, address _administrator) {
+		owner = msg.sender;
 		administrator = Administrator(_administrator);
 		name = _name;
 	}

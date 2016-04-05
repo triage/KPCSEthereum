@@ -6,6 +6,8 @@ import "Administrator";
 contract KPCS {
 
 	//Administrators
+	mapping(address => bool) public registeredAddresses;
+
 	address public owner;
 
 	mapping(address => KPCSAdministrator) public administrators;
@@ -21,7 +23,20 @@ contract KPCS {
 		owner = msg.sender;
 	}
 
-	function kill() {
+	function kill() public {
 		if (msg.sender == owner) suicide(owner);
+	}
+
+	function registerAsParticipant(string _name) public returns (bool) {
+		if(registeredAddresses[msg.sender] == true) {
+			return false;
+		}
+		participants[msg.sender] = new Participant(_name, owner);
+		registeredAddresses[msg.sender] = true;
+		return true;
+	}
+
+	function createCertificate() {
+		
 	}
 }

@@ -4,7 +4,7 @@ contract User {
 	}
 	State public state;
 
-	event UserStateChanged(address user, address administrator);
+	event UserStateChanged(address user, State state, address administrator);
 
     address public owner = msg.sender;
     address public administrator;
@@ -15,7 +15,7 @@ contract User {
 		state = State.Applied;
 		name = _name;
 		administrator = _administrator;
-		UserStateChanged(this, administrator);
+		UserStateChanged(this, state, administrator);
 	}
 
 	function changeState(uint _state) returns (bool) {

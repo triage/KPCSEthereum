@@ -5,7 +5,4 @@ contract KPCSAdministrator is Administrator("name", 0x0) {
 		name = _name;
 		owner = msg.sender;
 	}
-	function createParticipant() {
-
-	}
 }
