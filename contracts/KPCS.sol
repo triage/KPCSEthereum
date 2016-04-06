@@ -39,7 +39,7 @@ contract KPCS {
 		if(registered(msg.sender)) {
 			return false;
 		}
-		parties[msg.sender] = new Party(_name, _contactDetails);
+		parties[msg.sender] = new Party(_name, _contactDetails, owner);
 		registeredAddresses[msg.sender] = true;
 		return true;
 	}

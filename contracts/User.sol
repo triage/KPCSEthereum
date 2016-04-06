@@ -34,11 +34,11 @@ contract User {
 		return true;
 	}
 
-	function getState() returns (uint) {
+	function getState() public returns (uint) {
 		return uint(state);
 	}
 
-	function changeState(uint _state) returns (bool) {
+	function changeState(uint _state) public returns (bool) {
 		//user can't change their own state
 		if(msg.sender != administrator) {
 			return false;
@@ -47,7 +47,7 @@ contract User {
 		return true;
 	}
 
-	function accept() returns (bool) {
+	function accept() public returns (bool) {
 		if(msg.sender != administrator) {
 			return false;
 		}
@@ -55,7 +55,7 @@ contract User {
 		return true;
 	}
 
-	function reject() returns (bool) {
+	function reject() public returns (bool) {
 		if(msg.sender != administrator) {
 			return false;
 		}
@@ -63,7 +63,7 @@ contract User {
 		return true;
 	}
 
-	function suspend() returns (bool) {
+	function suspend() public returns (bool) {
 		if(msg.sender != administrator) {
 			return false;
 		}
@@ -71,7 +71,7 @@ contract User {
 		return true;
 	}
 
-	function expel() returns (bool) {
+	function expel() public returns (bool) {
 		if(msg.sender != administrator) {
 			return false;
 		}
@@ -79,7 +79,7 @@ contract User {
 		return true;
 	}
 
-	function kill() {
+	function kill() public {
 		if (msg.sender == owner) suicide(owner);
 	}
 
