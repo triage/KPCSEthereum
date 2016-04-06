@@ -1,6 +1,7 @@
 import {Certificate} from "./Certificate.sol";
 import {Participant} from "./Participant.sol";
 import {KPCSAdministrator} from "./KPCSAdministrator.sol";
+import {User} from "./User.sol";
 
 contract KPCS {
 
@@ -26,12 +27,29 @@ contract KPCS {
 		if (msg.sender == owner) suicide(owner);
 	}
 
+	function registerAsAdministrator(string _name) public returns (bool) {
+		if(registeredAddresses[msg.sender] == true) {
+			return false;
+		}
+		administrators[msg.sender] = new KPCSAdministrator(_name);
+		registeredAddresses[msg.sender] = true;
+		return true;
+	}
+
 	function registerAsParticipant(string _name) public returns (bool) {
 		if(registeredAddresses[msg.sender] == true) {
 			return false;
 		}
 		participants[msg.sender] = new Participant(_name, owner);
 		registeredAddresses[msg.sender] = true;
+		return true;
+	}
+
+	function createCertificate(address _importer, address _exporter, address _participantOrigin, address _participantSource, address _participantDestination) public returns (bool) {
+		if(User(msg.sender).getState() != uint(User.State.Accepted)) {
+			return false;
+		}
+		Certificate certificate = new Certificate(_importer, _exporter, _participantOrigin, _participantSource, _participantDestination);
 		return true;
 	}
 }

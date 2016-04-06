@@ -8,7 +8,7 @@ import {ParticipantAgent} from "./ParticipantAgent.sol";
 	(e.g. an employee at the Minister of Mines and Mining).
 */
 
-contract ParticipantAuthority is Administrator("name", 0x0) {
+contract ParticipantAuthority is Administrator("name", 0x0, 4) {
 	string public name;
 	address public participant;
 

@@ -2,7 +2,7 @@ import {User} from "./User.sol";
 import {Administrator} from "./Administrator.sol";
 import {Certificate} from "./Certificate.sol";
 
-contract ParticipantAgent is Administrator("name", 0x0) {
+contract ParticipantAgent is Administrator("name", 0x0, 3) {
 	/*
 		ParticipantAgents are entities delegated by Participants
 		(e.g. the Minister of Mines and Mining) the power to

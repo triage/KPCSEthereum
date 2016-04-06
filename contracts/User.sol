@@ -4,21 +4,40 @@ contract User {
 	}
 	State public state;
 
-	event UserStateChanged(address user, State state, address administrator);
+	enum Role {
+		KPCSAdministrator, Administrator, Participant, ParticipantAgent, ParticipantAuthority, Party
+	}
+	Role role;
+
+	event UserStateChanged(address user, State state, Role role, address administrator);
 
     address public owner = msg.sender;
     address public administrator;
     string public name;
     uint public creationTime = now;
 
-	function User(string _name, address _administrator) {
+	function User(string _name, address _administrator, uint _role) {
 		state = State.Applied;
 		name = _name;
 		administrator = _administrator;
-		UserStateChanged(this, state, administrator);
+		role = Role(_role);
+		UserStateChanged(this, state, role, administrator);
+	}
+
+	function getState() returns (uint) {
+		return uint(state);
+	}
+
+	function setState(uint _state) returns (bool) {
+		//user can't change their own state
+		if(msg.sender == owner) {
+			return false;
+		}
+		state = State(_state);
 	}
 
 	function changeState(uint _state) returns (bool) {
+		//user can't change their own state
 		if(msg.sender != administrator) {
 			return false;
 		}

@@ -1,6 +1,6 @@
 import {User} from "./User.sol";
 
-contract Administrator is User("name", 0x0) {
+contract Administrator is User("name", 0x0, 1) {
 	/*
 		Authorities can:
 		- create Issuers
@@ -12,7 +12,7 @@ contract Administrator is User("name", 0x0) {
 	address public owner;
 	string public name;
 
-	function Administrator(string _name, address _administrator) {
+	function Administrator(string _name, address _administrator, uint _role) {
 		name = _name;
 		owner = msg.sender;
 		administrator = _administrator;

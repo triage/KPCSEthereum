@@ -8,7 +8,7 @@ import {ParticipantAuthority} from "./ParticipantAuthority.sol";
 	They delegate ParticipantAgents, which are entities (e.g. the Minister of Mines
 	and Mining), which have the power to issue certificates
 */
-contract Participant is Administrator("name", 0x0) {
+contract Participant is Administrator("name", 0x0, 2) {
 	enum Status {
 		Applied, Active, Suspended 
 	}
