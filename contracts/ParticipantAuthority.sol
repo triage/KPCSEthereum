@@ -1,5 +1,5 @@
-import "Administrator";
-import "ParticipantAgent";
+import {Administrator} from "./Administrator.sol";
+import {ParticipantAgent} from "./ParticipantAgent.sol";
 
 /*
 	ParticipantAuthorities are entities (e.g. The Minister of Mines and Mining),

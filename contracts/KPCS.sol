@@ -1,7 +1,6 @@
-import "Certificate";
-import "Participant";
-import "KPCSAdministrator";
-import "Administrator";
+import {Certificate} from "./Certificate.sol";
+import {Participant} from "./Participant.sol";
+import {KPCSAdministrator} from "./KPCSAdministrator.sol";
 
 contract KPCS {
 
@@ -34,9 +33,5 @@ contract KPCS {
 		participants[msg.sender] = new Participant(_name, owner);
 		registeredAddresses[msg.sender] = true;
 		return true;
-	}
-
-	function createCertificate() {
-
 	}
 }

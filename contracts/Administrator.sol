@@ -1,4 +1,4 @@
-import "User";
+import {User} from "./User.sol";
 
 contract Administrator is User("name", 0x0) {
 	/*

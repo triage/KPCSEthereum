@@ -1,5 +1,3 @@
-import "Participant";
-
 contract Certificate {
 
 	address public owner;
