@@ -7,7 +7,7 @@ contract User {
 	enum Role {
 		KPCSAdministrator, Administrator, Participant, ParticipantAgent, ParticipantAuthority, Party
 	}
-	Role role;
+	Role public role;
 
 	event UserStateChanged(address user, State state, Role role, address administrator);
 
@@ -24,16 +24,18 @@ contract User {
 		UserStateChanged(this, state, role, administrator);
 	}
 
-	function getState() returns (uint) {
-		return uint(state);
-	}
-
 	function setState(uint _state) returns (bool) {
-		//user can't change their own state
-		if(msg.sender == owner) {
+		//user cannot change their own status, can only be done by the issuing administrator
+		if(msg.sender != administrator) {
 			return false;
 		}
+		
 		state = State(_state);
+		return true;
+	}
+
+	function getState() returns (uint) {
+		return uint(state);
 	}
 
 	function changeState(uint _state) returns (bool) {

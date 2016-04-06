@@ -49,22 +49,4 @@ contract Administrator is User("name", 0x0, 1) {
 	function kill() {
 		if (msg.sender == owner) suicide(owner);
 	}
-
-	// function participantCreate() return (address) {
-	// 	if(super.state == State.Applied || msg.sender != super.owner)  {
-	// 		return 0x0
-	// 	}
-	// 	return Participant()
-	// }
-
-	// function issuerCreate() return (address) {
-	// 	if(super.state == State.Applied || msg.sender != super.owner)  {
-	// 		return 0x0
-	// 	}
-	// 	return Issuer()
-	// }
-
-	// function agentCreate() {
-		
-	// }
 }

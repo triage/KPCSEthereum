@@ -2,6 +2,7 @@ import {Certificate} from "./Certificate.sol";
 import {Participant} from "./Participant.sol";
 import {KPCSAdministrator} from "./KPCSAdministrator.sol";
 import {User} from "./User.sol";
+import {Party} from "./Party.sol";
 
 contract KPCS {
 
@@ -10,7 +11,7 @@ contract KPCS {
 
 	address public owner;
 
-	mapping(address => KPCSAdministrator) public administrators;
+	KPCSAdministrator public administrator;
 
 	//all certificates
 	mapping(address => Certificate) public certificates;
@@ -18,8 +19,11 @@ contract KPCS {
 	//member countries
 	mapping(address => Participant) public participants;
 
+	//member countries
+	mapping(address => Party) public parties;
+
 	function KPCS() {
-		administrators[msg.sender] = new KPCSAdministrator("KPCS Genesis Administrator");
+		administrator = new KPCSAdministrator("KPCS Administrator");
 		owner = msg.sender;
 	}
 
@@ -27,17 +31,21 @@ contract KPCS {
 		if (msg.sender == owner) suicide(owner);
 	}
 
-	function registerAsAdministrator(string _name) public returns (bool) {
-		if(registeredAddresses[msg.sender] == true) {
+	function registered(address _address) private returns (bool) {
+		return (registeredAddresses[_address] == true);
+	}
+
+	function registerAsParty(string _name, string _contactDetails) public returns (bool) {
+		if(registered(msg.sender)) {
 			return false;
 		}
-		administrators[msg.sender] = new KPCSAdministrator(_name);
+		parties[msg.sender] = new Party(_name, _contactDetails);
 		registeredAddresses[msg.sender] = true;
 		return true;
 	}
 
 	function registerAsParticipant(string _name) public returns (bool) {
-		if(registeredAddresses[msg.sender] == true) {
+		if(registered(msg.sender)) {
 			return false;
 		}
 		participants[msg.sender] = new Participant(_name, owner);
