@@ -7,8 +7,13 @@
     "images/": "images/"
   },
   "deploy": [
-    "MetaCoin",
-    "KPCS"
+    "KPCS",
+    "Participant",
+    "ParticipantAgent",
+    "ParticipantAuthority",
+    "Party",
+    "Certificate",
+    "User"
   ],
   "rpc": {
     "host": "localhost",

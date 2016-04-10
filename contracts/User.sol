@@ -1,3 +1,6 @@
+import {UserType} from "./UserType.sol";
+import {UserState} from "./UserState.sol";
+
 contract User {
 	enum State {
 		Applied, Accepted, Rejected, Suspended, Expelled
@@ -14,7 +17,7 @@ contract User {
     address public owner = msg.sender;
     address public administrator;
     string public name;
-    uint public creationTime = now;
+    uint public dateCreated = now;
 
 	function User(string _name, address _administrator, uint _role) {
 		state = State.Applied;
@@ -34,8 +37,20 @@ contract User {
 		return true;
 	}
 
+	function getType() public returns (int) {
+		throw;
+	}
+
 	function getState() public returns (uint) {
 		return uint(state);
+	}
+
+	function getRole() private returns (uint) {
+		return uint(role);
+	}
+
+	function isRole(uint _role) public returns (bool) {
+		return _role == getRole();
 	}
 
 	function changeState(uint _state) public returns (bool) {

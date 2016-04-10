@@ -1,8 +1,8 @@
-import {Certificate} from "./Certificate.sol";
-import {Participant} from "./Participant.sol";
+// import {Certificate} from "./Certificate.sol";
+// import {Participant} from "./Participant.sol";
 import {KPCSAdministrator} from "./KPCSAdministrator.sol";
 import {User} from "./User.sol";
-import {Party} from "./Party.sol";
+import {UserType} from "./UserType.sol";
 
 contract KPCS {
 
@@ -14,13 +14,13 @@ contract KPCS {
 	KPCSAdministrator public administrator;
 
 	//all certificates
-	mapping(address => Certificate) public certificates;
+	address[] public certificates;
 
 	//member countries
-	mapping(address => Participant) public participants;
+	address[] public participants;
 
 	//member countries
-	mapping(address => Party) public parties;
+	address[] public parties;
 
 	function KPCS() {
 		administrator = new KPCSAdministrator("KPCS Administrator");
@@ -35,20 +35,20 @@ contract KPCS {
 		return (registeredAddresses[_address] == true);
 	}
 
-	function registerAsParty(string _name, string _contactDetails) public returns (bool) {
-		if(registered(msg.sender)) {
+	function registerAsParty(address _party) public returns (bool) {
+		if(registered(msg.sender) || User(_party).getType() != UserType.Party()) {
 			return false;
 		}
-		parties[msg.sender] = new Party(_name, _contactDetails, owner);
+		parties.push(_party);
 		registeredAddresses[msg.sender] = true;
 		return true;
 	}
 
-	function registerAsParticipant(string _name) public returns (bool) {
-		if(registered(msg.sender)) {
+	function registerAsParticipant(address _participant) public returns (bool) {
+		if(registered(msg.sender) || User(_participant).getType() != UserType.Participant()) {
 			return false;
 		}
-		participants[msg.sender] = new Participant(_name, owner);
+		participants.push(_participant);
 		registeredAddresses[msg.sender] = true;
 		return true;
 	}

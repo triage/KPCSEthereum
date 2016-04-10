@@ -1,5 +1,6 @@
 import {Administrator} from "./Administrator.sol";
-import {ParticipantAgent} from "./ParticipantAgent.sol";
+import {UserType} from "./UserType.sol";
+// import {ParticipantAgent} from "./ParticipantAgent.sol";
 
 /*
 	ParticipantAuthorities are entities (e.g. The Minister of Mines and Mining),
@@ -9,26 +10,27 @@ import {ParticipantAgent} from "./ParticipantAgent.sol";
 */
 
 contract ParticipantAuthority is Administrator("name", 0x0, 4) {
-	string public name;
-	address public participant;
 
 	mapping(address => bool) registeredAddresses;
-	mapping(address => ParticipantAgent) public agents;
+	address[] public agents;
 
 	event ParticipantAgentRegistered(address indexed participant, string indexed name);
 
-	function ParticipantAuthority(string _name, address _participant) {
+	function ParticipantAuthority(string _name, address _administrator) {
 		name = _name;
-		participant = _participant;
-		owner = msg.sender;
+		administrator = _administrator;
 	}
 
-	function registerAsParticipatingAgent(string _name) public returns (bool) {
+	function registerAsParticipatingAgent(address agent) public returns (bool) {
 		if(registeredAddresses[msg.sender] == true) {
 			return false;
 		}
-		agents[msg.sender] = new ParticipantAgent(_name, owner);
+		agents.push(agent);
 		registeredAddresses[msg.sender] = true;
 		return true;
+	}
+
+	function getType() public returns (int) {
+		return UserType.ParticipantAuthority();
 	}
 }

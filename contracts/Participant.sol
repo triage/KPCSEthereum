@@ -1,7 +1,6 @@
 import {Administrator} from "./Administrator.sol";
-import {ParticipantAgent} from"./ParticipantAgent.sol";
-import {KPCSAdministrator} from "./KPCSAdministrator.sol";
-import {ParticipantAuthority} from "./ParticipantAuthority.sol";
+import {UserType} from "./User.sol";
+// import {ParticipantAuthority} from "./ParticipantAuthority.sol";
 
 /*
 	Particpants are member countries that participate in the Kimberley Process.
@@ -16,8 +15,7 @@ contract Participant is Administrator("name", 0x0, 2) {
 	mapping(address => bool) public registeredAddresses;
 
 	Status public status;
-	string public name;
-	KPCSAdministrator public administrator;
+	address public administrator;
 
 	event ParticipantCreated(address participant, string name, address administrator);
 
@@ -30,23 +28,27 @@ contract Participant is Administrator("name", 0x0, 2) {
 
 	function Participant(string _name, address _administrator) {
 		name = _name;
-		administrator = KPCSAdministrator(_administrator);
+		administrator = _administrator;
 		ParticipantCreated(this, name, administrator);
 	}
 
-	function registerAsImportingAuthority(string _name) public returns (bool) {
+	function getType() public returns (int) {
+		return UserType.Participant();
+	}
+
+	function registerAsImportingAuthority(address _address) public returns (bool) {
 		if(authorities.importing != 0x0) {
 			return false;
 		}
-		authorities.importing = new ParticipantAuthority(_name, owner);
+		authorities.importing = _address;
 		return true;
 	}
 
-	function registerAsExportingAuthority(string _name) public returns (bool) {
+	function registerAsExportingAuthority(address _address) public returns (bool) {
 		if(authorities.exporting != 0x0) {
 			return false;
 		}
-		authorities.exporting = new ParticipantAuthority(_name, owner);
+		authorities.exporting = _address;
 		return true;
 	}
 
