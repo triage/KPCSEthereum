@@ -30,7 +30,7 @@ contract Certificate {
 
 	//Participants in the KP: member countries of source and destination
 	struct Participants {
-		address origin; //the declared origin of the goods
+		address[] origins; //the declared origin of the goods
 		address source; //the country we are exporting from
 		address destination; //the country we are importing to
 	}
@@ -81,7 +81,7 @@ contract Certificate {
 	- participantSource - KPCS Participant (member country) the goods are being sent from
 	- participantDestination - KPCS Participant (member country) the goods are being sent to
 	*/
-    function Certificate(address _importer, address _exporter, address _participantOrigin, address _participantSource, address _participantDestination) {
+    function Certificate(address _importer, address _exporter, address[] _participantOrigin, address _participantSource, address _participantDestination) {
     	owner = msg.sender;
     	parties = Parties(_importer, _exporter);
     	participants = Participants(_participantOrigin, _participantSource, _participantDestination);

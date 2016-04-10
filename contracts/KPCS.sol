@@ -52,12 +52,4 @@ contract KPCS {
 		registeredAddresses[msg.sender] = true;
 		return true;
 	}
-
-	function createCertificate(address _importer, address _exporter, address _participantOrigin, address _participantSource, address _participantDestination) public returns (bool) {
-		if(User(msg.sender).getState() != uint(User.State.Accepted)) {
-			return false;
-		}
-		Certificate certificate = new Certificate(_importer, _exporter, _participantOrigin, _participantSource, _participantDestination);
-		return true;
-	}
 }
