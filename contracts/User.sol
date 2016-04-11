@@ -3,7 +3,7 @@ import {UserState} from "./UserState.sol";
 
 contract User {
 	enum State {
-		Applied, Accepted, Rejected, Suspended, Expelled
+		Applied, Accepted, Rejected, Suspended
 	}
 	State public state;
 
@@ -32,7 +32,6 @@ contract User {
 		if(msg.sender != administrator) {
 			return false;
 		}
-		
 		state = State(_state);
 		return true;
 	}
@@ -53,15 +52,6 @@ contract User {
 		return _role == getRole();
 	}
 
-	function changeState(uint _state) public returns (bool) {
-		//user can't change their own state
-		if(msg.sender != administrator) {
-			return false;
-		}
-		state = convertUIntToState(_state);
-		return true;
-	}
-
 	function accept() public returns (bool) {
 		if(msg.sender != administrator) {
 			return false;
@@ -72,7 +62,7 @@ contract User {
 
 	function reject() public returns (bool) {
 		if(msg.sender != administrator) {
-			return false;
+			throw;
 		}
 		state = State.Rejected;
 		return true;
@@ -86,30 +76,7 @@ contract User {
 		return true;
 	}
 
-	function expel() public returns (bool) {
-		if(msg.sender != administrator) {
-			return false;
-		}
-		state = State.Expelled;
-		return true;
-	}
-
 	function kill() public {
 		if (msg.sender == owner) suicide(owner);
-	}
-
-	function convertUIntToState(uint _state) private returns (State) {
-		if (_state == 0) {
-			return State.Applied;
-		} else if(_state == 1) {
-			return State.Accepted;
-		} else if(_state == 2) {
-			return State.Rejected;
-		} else if(_state == 3) {
-			return State.Suspended;
-		} else if(_state == 4) {
-			return State.Expelled;
-		}
-		throw;
 	}
 }

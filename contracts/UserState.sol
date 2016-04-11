@@ -14,8 +14,4 @@ library UserState {
 	function Suspended() returns (uint) {
 		return 3;
 	}
-
-	function Expelled() returns (uint) {
-		return 4;
-	}
 }

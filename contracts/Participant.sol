@@ -8,14 +8,7 @@ import {UserType} from "./User.sol";
 	and Mining), which have the power to issue certificates
 */
 contract Participant is Administrator("name", 0x0, 2) {
-	enum Status {
-		Applied, Active, Suspended 
-	}
-	
 	mapping(address => bool) public registeredAddresses;
-
-	Status public status;
-	address public administrator;
 
 	event ParticipantCreated(address participant, string name, address administrator);
 
@@ -50,24 +43,5 @@ contract Participant is Administrator("name", 0x0, 2) {
 		}
 		authorities.exporting = _address;
 		return true;
-	}
-
-	function changeStatus(uint _status) public returns (bool) {
-		if(msg.sender != owner) {
-			return false;
-		}
-		status = convertUIntToStatus(_status);
-		return true;
-	}
-
-	function convertUIntToStatus(uint _status) private returns (Status) {
-		if (_status == 0) {
-			return Status.Applied;
-		} else if(_status == 1) {
-			return Status.Active;
-		} else if(_status == 2) {
-			return Status.Suspended;
-		}
-		throw;
 	}
 }
