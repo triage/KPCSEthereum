@@ -17,7 +17,7 @@ contract KPCS {
 	address[] public certificates;
 
 	//member countries
-	address[] public participants;
+	mapping(address => address) public participants;
 
 	//member countries
 	address[] public parties;
@@ -48,8 +48,12 @@ contract KPCS {
 		if(registered(msg.sender) || User(_participant).getType() != UserType.Participant()) {
 			return false;
 		}
-		participants.push(_participant);
+		participants[_participant] = _participant;
 		registeredAddresses[msg.sender] = true;
 		return true;
+	}
+
+	function registeredAsParticipant(address _participant) public returns (bool) {
+		return participants[_participant] != 0x0;
 	}
 }
