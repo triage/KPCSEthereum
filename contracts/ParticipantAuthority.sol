@@ -9,7 +9,7 @@ import {UserType} from "./UserType.sol";
 	(e.g. an employee at the Minister of Mines and Mining).
 */
 
-contract ParticipantAuthority is Administrator("name", 0x0, 4) {
+contract ParticipantAuthority is Administrator("name", 0x0) {
 
 	mapping(address => bool) registeredAddresses;
 	address[] public agents;

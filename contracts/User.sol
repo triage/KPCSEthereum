@@ -7,24 +7,18 @@ contract User {
 	}
 	State public state;
 
-	enum Role {
-		KPCSAdministrator, Administrator, Participant, ParticipantAgent, ParticipantAuthority, Party
-	}
-	Role public role;
-
-	event UserStateChanged(address user, State state, Role role, address administrator);
+	event UserStateChanged(address user, State state, address administrator);
 
     address public owner = msg.sender;
     address public administrator;
     string public name;
     uint public dateCreated = now;
 
-	function User(string _name, address _administrator, int _role) {
+	function User(string _name, address _administrator) {
 		state = State.Applied;
 		name = _name;
 		administrator = _administrator;
-		role = Role(_role);
-		UserStateChanged(this, state, role, administrator);
+		UserStateChanged(this, state, administrator);
 	}
 
 	function setState(uint _state) returns (bool) {
@@ -42,14 +36,6 @@ contract User {
 
 	function getState() public returns (uint) {
 		return uint(state);
-	}
-
-	function getRole() private returns (int) {
-		return int(role);
-	}
-
-	function isRole(int _role) public returns (bool) {
-		return _role == getRole();
 	}
 
 	function accept() public returns (bool) {

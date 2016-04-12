@@ -1,13 +1,12 @@
 import {Administrator} from "./Administrator.sol";
 import {UserType} from "./User.sol";
-// import {ParticipantAuthority} from "./ParticipantAuthority.sol";
 
 /*
-	Particpants are member countries that participate in the Kimberley Process.
+	Participants are member countries that participate in the Kimberley Process.
 	They delegate ParticipantAgents, which are entities (e.g. the Minister of Mines
 	and Mining), which have the power to issue certificates
 */
-contract Participant is Administrator("name", 0x0, 2) {
+contract Participant is Administrator("name", 0x0) {
 	mapping(address => bool) public registeredAddresses;
 
 	event ParticipantCreated(address participant, string name, address administrator);

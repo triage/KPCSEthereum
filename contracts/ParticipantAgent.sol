@@ -1,7 +1,7 @@
 import {Administrator} from "./Administrator.sol";
 import {UserType} from "./UserType.sol";
 
-contract ParticipantAgent is Administrator("name", 0x0, UserType.ParticipantAgent()) {
+contract ParticipantAgent is Administrator("name", 0x0) {
 	/*
 		ParticipantAgents are entities delegated by Participants
 		(e.g. the Minister of Mines and Mining) the power to

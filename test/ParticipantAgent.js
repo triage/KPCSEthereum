@@ -21,7 +21,7 @@ contract('KPCS', function(accounts) {
 		).then(
 			function(authority) {
 				Authority.instance = authority;
-				ParticipantAgent.new(Agent.name, accounts[2], {from: accounts[3]});
+				return ParticipantAgent.new(Agent.name, accounts[2], {from: accounts[3]});
 			}
 		).then(
 			function(agent) {
@@ -37,14 +37,27 @@ contract('KPCS', function(accounts) {
 			function(administrator) {
 				assert.equal(administrator, accounts[2]);
 				//approve
-				return Agent.instance.accept({from: accounts[1]});
+				return Agent.instance.accept({from: accounts[2]});
 			}
 		).then(
 			function() {
-				return Agent.instance.getState().call();
+				return Agent.instance.getState.call();
 			}
 		).then(
-		
+			function(state) {
+				assert.equal(state, 1);
+				return Agent.instance.reject({from: accounts[3]});
+			}
+		).then(
+			function() {
+				return Agent.instance.getState.call();
+			}
+		).then(
+			function(state) {
+				//only the admin should be able to approve
+				assert.equal(state, 1);
+				done();
+			}
 		).catch({
 			function(e){
 				console.log(e);
