@@ -19,7 +19,7 @@ contract User {
     string public name;
     uint public dateCreated = now;
 
-	function User(string _name, address _administrator, uint _role) {
+	function User(string _name, address _administrator, int _role) {
 		state = State.Applied;
 		name = _name;
 		administrator = _administrator;
@@ -44,11 +44,11 @@ contract User {
 		return uint(state);
 	}
 
-	function getRole() private returns (uint) {
-		return uint(role);
+	function getRole() private returns (int) {
+		return int(role);
 	}
 
-	function isRole(uint _role) public returns (bool) {
+	function isRole(int _role) public returns (bool) {
 		return _role == getRole();
 	}
 
@@ -62,7 +62,7 @@ contract User {
 
 	function reject() public returns (bool) {
 		if(msg.sender != administrator) {
-			throw;
+			return false;
 		}
 		state = State.Rejected;
 		return true;

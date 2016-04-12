@@ -1,7 +1,7 @@
 import {Administrator} from "./Administrator.sol";
 import {UserType} from "./UserType.sol";
 
-contract ParticipantAgent is Administrator("name", 0x0, 3) {
+contract ParticipantAgent is Administrator("name", 0x0, UserType.ParticipantAgent()) {
 	/*
 		ParticipantAgents are entities delegated by Participants
 		(e.g. the Minister of Mines and Mining) the power to
@@ -13,13 +13,11 @@ contract ParticipantAgent is Administrator("name", 0x0, 3) {
 
 	*/
 
-	address public participant;
-
-	function ParticipantAgent(string _name, address _participant) {
-		owner = msg.sender;
-		participant = _participant;
+	function ParticipantAgent(string _name, address _administrator) {
 		name = _name;
+		administrator = _administrator;
 	}
+
 	function getType() public returns (int) {
 		return UserType.ParticipantAgent();
 	}

@@ -13,7 +13,9 @@
     "ParticipantAuthority",
     "Party",
     "Certificate",
-    "User"
+    "User",
+    "UserState",
+    "UserType"
   ],
   "rpc": {
     "host": "localhost",
