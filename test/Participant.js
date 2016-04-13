@@ -1,6 +1,7 @@
 const Botswana = {name: "Botswana"};
 
-contract('KPCS', function(accounts) {
+// contract('KPCS', function(accounts) {
+describe("Participant", function() {
     it("Register as a Participant, and KPCS Administrator should be able to change their state", function(done) {
         var kpcs;
         KPCS.new({from: accounts[0]}).then(
@@ -94,3 +95,4 @@ contract('KPCS', function(accounts) {
         })
     });
 });
+// });

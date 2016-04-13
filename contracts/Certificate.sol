@@ -89,6 +89,14 @@ contract Certificate {
     	signatures = Signatures(now, 0, 0, 0);
     }
 
+    function addParsel(string carats, string value, address[] origins) returns (bool) {
+    	if(msg.sender != owner) {
+    		return false;
+    	}
+    	parsels.push(Parsel(carats, value, origins));
+    	return true;
+    }
+
     function sign() returns (bool) {
     	if(msg.sender == authorities.exporter) {
     		if(signatures.exporterAuthority > 0) {
@@ -106,7 +114,7 @@ contract Certificate {
     		}
     		signatures.importer = now;
     	} else {
-    		throw;
+    		return false;
     	}
 
     	if(hasRequiredSignatures()) {
