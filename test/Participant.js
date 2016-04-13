@@ -1,7 +1,6 @@
 const Botswana = {name: "Botswana"};
 
-// contract('KPCS', function(accounts) {
-describe("Participant", function() {
+contract('KPCS', function(accounts) {
     it("Register as a Participant, and KPCS Administrator should be able to change their state", function(done) {
         var kpcs;
         KPCS.new({from: accounts[0]}).then(
@@ -19,11 +18,16 @@ describe("Participant", function() {
             }
         ).then(
             function(registered) {
-                return kpcs.registeredAsParticipant.call(Botswana.instance.address);
+                return Botswana.instance.accept({from: accounts[0]});
             }
         ).then(
-            function(registered) {
-                assert.equal(registered,true);
+            function() {
+                //accept Botswana
+                return Botswana.instance.getState.call();
+            }
+        ).then(
+            function(state) {
+                assert.equal(state,1);
                 return Botswana.instance.name.call();
             }
         ).then(
@@ -95,4 +99,3 @@ describe("Participant", function() {
         })
     });
 });
-// });
