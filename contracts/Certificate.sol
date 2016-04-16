@@ -51,10 +51,10 @@ contract Certificate {
 	Parties parties;
 
 	struct Signatures {
-		uint importer;
 		uint exporter;
-		uint exporterAuthority;
+		uint importer;
 		uint importerAuthority;
+		uint exporterAuthority;
 	}
 	Signatures public signatures;
 
