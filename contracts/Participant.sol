@@ -28,11 +28,11 @@ contract Participant is Administrator("name", 0x0) {
 		return UserType.Participant();
 	}
 
-	function suspend() public returns (bool) {
-		//by KPCS bylaws, suspending a member must be by unanimous decision
-		//TODO: implement
-		return false;
-	}
+	//TODO: implement
+	//by KPCS bylaws, suspending a member must be by unanimous decision
+	// function suspend() public returns (bool) {
+	// 	return false;
+	// }
 
 	function registerAsImportingAuthority(address _address) public returns (bool) {
 		if(authorities.importing != 0x0) {

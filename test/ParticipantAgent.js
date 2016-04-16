@@ -3,7 +3,7 @@ const Authority = {name: "Ministry of Minerals, Energy and Water Resources"};
 const Agent = {name: "Hon Onkokame Kitso Mokaila"};
 
 contract('KPCS', function(accounts) {
-	it("Register as a Participant Authority", function(done) {
+	it("Register as a Participant Agent", function(done) {
 		var kpcs;
 		KPCS.new({from: accounts[0]}).then(
 			function (instance) {

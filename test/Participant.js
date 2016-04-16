@@ -39,11 +39,6 @@ contract('KPCS', function(accounts) {
             function(type) {
                 //type should be == 1 (Participant)
                 assert.equal(type, 1)
-                return Botswana.instance.getState.call();
-            }
-        ).then(
-            function(state) {
-                assert.equal(state, 0) //state should be == 0 (Applied)
                 return Botswana.instance.administrator.call();
             }
         ).then(
