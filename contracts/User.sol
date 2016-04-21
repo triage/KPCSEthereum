@@ -9,7 +9,7 @@ contract User {
 
 	event UserStateChanged(address user, State state, address administrator);
 
-    address public owner = msg.sender;
+    address public owner;
     address public administrator;
     string public name;
     uint public dateCreated = now;
@@ -17,6 +17,7 @@ contract User {
 	function User(string _name, address _administrator) {
 		state = State.Applied;
 		name = _name;
+		owner = msg.sender;
 		administrator = _administrator;
 		UserStateChanged(this, state, administrator);
 	}

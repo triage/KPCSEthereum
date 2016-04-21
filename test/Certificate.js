@@ -21,7 +21,7 @@ const MyCertficate = {};
 const admin = {};
 
 contract('KPCS', function(accounts) {
-	it("Should be able to create a certiciate, complete it, expire it and check for validity", function(done) {
+	it("Should be able to create a certicicate, complete it, expire it and check for validity", function(done) {
 		var kpcs;
 		admin.from = accounts[0];
 		KPCS.new({from: accounts[0]}).then(
@@ -54,7 +54,6 @@ contract('KPCS', function(accounts) {
 		).then(
 			function(uae) {
 				UAE.instance = uae;
-
 				//now we should accept all of these particpants from the KPCS Administrator
 				return Botswana.instance.accept({from: admin.from});
 			}
@@ -103,7 +102,6 @@ contract('KPCS', function(accounts) {
 			}
 		).then(
 			function(agent) {
-				console.log("zzzzzzz");
 				UAE.agent.instance = agent;
 				//all particpants created and accepted. Create the importing party
 				JuliusKlein.from = accounts[5];
@@ -129,11 +127,12 @@ contract('KPCS', function(accounts) {
 			//the exporting party creates the certificate
 			function() {
 				//function Certificate(address _importer, address _exporter, address[] _participantOrigin, address _participantSource, address _participantDestination) {
-				return Certificate.new(ChowTaiFook.instance.address,
-					JuliusKlein.instance.address,
+				return Certificate.new(JuliusKlein.instance.address,
+					ChowTaiFook.instance.address,
 					[SierraLeone.instance.address, Botswana.instance.address],
-					Belgium.instance.address,
-					UAE.instance.address,{from: JuliusKlein.from});
+					Belgium.agent.from,
+					UAE.agent.from,
+					{from: JuliusKlein.from});
 			}
 		).then(
 			function(certificate) {
@@ -142,7 +141,7 @@ contract('KPCS', function(accounts) {
 				//function addParsel(string carats, string value, address[] origins) returns (bool)
 				return MyCertficate.instance.addParsel('100',
 					'$1,000,000',
-					[SierraLeone.instance.address, Botswana.instance.address])
+					[SierraLeone.instance.address, Botswana.instance.address], {from: ChowTaiFook.from});
 			}
 		).then(
 			//importing party should sign
@@ -151,16 +150,26 @@ contract('KPCS', function(accounts) {
 			}
 		).then(
 			//exporting authority should sign
-			function() {
-				return MyCertficate.instance.sign({from: Belgium.authority.from})
+			function(signed) {
+				return MyCertficate.instance.sign({from: Belgium.agent.from});
 			}
 		).then(
 			//importing authority should sign
-			function() {
-				return MyCertficate.instance.sign({from: UAE.authority.from})
+			function(signed) {
+				return MyCertficate.instance.sign({from: UAE.agent.from});
 			}
 		).then(
-			function() {
+			function(signed) {
+				return MyCertficate.instance.signatures.call();
+			}
+		).then(
+			function(signatures) {
+				console.log(signatures);
+				return MyCertficate.instance.isValid.call();
+			}
+		).then(
+			function(isValid) {
+				assert.equal(isValid, true);
 				done();
 			}
 		).catch({

@@ -11,22 +11,25 @@ import {UserType} from "./UserType.sol";
 
 contract ParticipantAuthority is Administrator("name", 0x0) {
 
-	mapping(address => bool) registeredAddresses;
-	address[] public agents;
+	mapping(address => bool) registeredAgentAddresses;
 
 	event ParticipantAgentRegistered(address indexed participant, string indexed name);
 
 	function ParticipantAuthority(string _name, address _administrator) {
 		name = _name;
+		owner = msg.sender;
 		administrator = _administrator;
 	}
 
+	function isRegisteredAgent(address _agent) returns (bool) {
+		return registeredAgentAddresses[_agent] == true;
+	}
+
 	function registerAsParticipatingAgent(address agent) public returns (bool) {
-		if(registeredAddresses[msg.sender] == true) {
+		if(msg.sender != owner) {
 			return false;
 		}
-		agents.push(agent);
-		registeredAddresses[msg.sender] = true;
+		registeredAgentAddresses[true] = true;
 		return true;
 	}
 

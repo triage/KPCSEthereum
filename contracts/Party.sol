@@ -6,6 +6,7 @@ contract Party is User("name", 0x0) {
 
 	function Party(string _name, string _contactDetails, address _administrator) {
 		name = _name;
+		owner = msg.sender;
 		contactDetails = _contactDetails;
 		state = State.Applied;
 		administrator = _administrator;

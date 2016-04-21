@@ -1,3 +1,6 @@
+import {User} from "./User.sol";
+import {Participant} from "./Participant.sol";
+
 contract Certificate {
 
 	address public owner;
@@ -37,18 +40,18 @@ contract Certificate {
 	Participants participants;
 
 	//Authorities: issuing and importing
-	struct Authorities {
+	struct Agents {
 		address exporter;
 		address importer;
 	}
-	Authorities public authorities;
+	Agents public agents;
 
 	//the parties to the transaction: importer and exporter
 	struct Parties {
 		address exporter;
 		address importer;
 	}
-	Parties parties;
+	Parties public parties;
 
 	struct Signatures {
 		uint exporter;
@@ -81,12 +84,16 @@ contract Certificate {
 	- participantSource - KPCS Participant (member country) the goods are being sent from
 	- participantDestination - KPCS Participant (member country) the goods are being sent to
 	*/
-    function Certificate(address _importer, address _exporter, address[] _participantOrigin, address _participantSource, address _participantDestination) {
-    	owner = msg.sender;
-    	parties = Parties(_importer, _exporter);
-    	participants = Participants(_participantOrigin, _participantSource, _participantDestination);
-    	owner = msg.sender;
-    	signatures = Signatures(now, 0, 0, 0);
+    function Certificate(address _exporter,
+    	address _importer,
+    	address[] _participantOrigin,
+    	address _participantSource,
+    	address _participantDestination) {
+    		owner = msg.sender;
+    		parties = Parties(_exporter, _importer);
+    		participants = Participants(_participantOrigin, _participantSource, _participantDestination);
+    		owner = msg.sender;
+    		signatures = Signatures(now, 0, 0, 0);
     }
 
     function addParsel(string carats, string value, address[] origins) returns (bool) {
@@ -97,22 +104,26 @@ contract Certificate {
     	return true;
     }
 
+    function getExportingPartyOwner() public returns (address) {
+    	return User(parties.exporter).owner();
+    }
+
     function sign() returns (bool) {
-    	if(msg.sender == authorities.exporter) {
+    	if(Participant(participants.source).isValidExportingAgent(msg.sender)) {
     		if(signatures.exporterAuthority > 0) {
     			return false;
     		}
-    		signatures.exporterAuthority = now;
-    	} else if(msg.sender == authorities.importer) {
+    		signatures.exporterAuthority = 111111;
+    	} else if(Participant(participants.source).isValidImportingAgent(msg.sender)) {
     		if(signatures.importerAuthority > 0) {
     			return false;
     		}
-    		signatures.importerAuthority = now;
-    	} else if(msg.sender == parties.importer) {
+    		signatures.importerAuthority = 222222;
+    	} else if(msg.sender == User(parties.importer).owner()) {
     		if(signatures.importer > 0) {
     			return false;
     		}
-    		signatures.importer = now;
+    		signatures.importer = 333333;
     	} else {
     		return false;
     	}
@@ -120,9 +131,8 @@ contract Certificate {
     	if(hasRequiredSignatures()) {
     		state = State.Issued;
     		Issued(this);
-    	} else {
-    		return true;
     	}
+    	return true;
     }
 
     function hasRequiredSignatures() returns (bool isComplete) {
