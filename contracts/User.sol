@@ -31,6 +31,10 @@ contract User {
 		return true;
 	}
 
+	function getName() public returns (string) {
+		return name;
+	}
+
 	function getType() public returns (int) {
 		throw;
 	}

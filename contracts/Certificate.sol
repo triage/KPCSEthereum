@@ -1,5 +1,6 @@
 import {User} from "./User.sol";
 import {Participant} from "./Participant.sol";
+import {ParticipantAuthority} from "./ParticipantAuthority.sol";
 
 contract Certificate {
 
@@ -53,13 +54,18 @@ contract Certificate {
 	}
 	Parties public parties;
 
-	struct Signatures {
-		uint exporter;
-		uint importer;
-		uint importerAuthority;
-		uint exporterAuthority;
-	}
-	Signatures public signatures;
+    struct Signature {
+        uint date;
+        address owner;
+    }
+
+    struct Signatures {
+        Signature exporter;
+        Signature importer;
+        Signature exporterAuthority;
+        Signature importerAuthority;
+    }
+    Signatures private signatures;
 
 	struct Parsel {
 		string carats;
@@ -68,12 +74,14 @@ contract Certificate {
 	}
 	Parsel[] public parsels;
 
-
 	event Requested(address indexed certificate);
 	event Issued(address indexed certificate);
 	event Expired(address indexed certificate);
 	event Exported(address indexed certificate);
 	event Imported(address indexed certificate);
+    event Signed(address from, string name);
+
+    uint public numberOfSignatures;
 
 	/*
 	Certificates should be created by the exporter: the party in possession of the goods.
@@ -93,7 +101,12 @@ contract Certificate {
     		parties = Parties(_exporter, _importer);
     		participants = Participants(_participantOrigin, _participantSource, _participantDestination);
     		owner = msg.sender;
-    		signatures = Signatures(now, 0, 0, 0);
+            signatures = Signatures(
+                Signature(now, _exporter),
+                Signature(0,0x0),
+                Signature(0,0x0),
+                Signature(0,0x0));
+            numberOfSignatures = 1;
     }
 
     function addParsel(string carats, string value, address[] origins) returns (bool) {
@@ -104,39 +117,76 @@ contract Certificate {
     	return true;
     }
 
+    function getImportingPartyOwner() public returns (address) {
+        return User(parties.importer).owner();
+    }
+
     function getExportingPartyOwner() public returns (address) {
     	return User(parties.exporter).owner();
     }
 
-    function sign() returns (bool) {
-    	if(Participant(participants.source).isValidExportingAgent(msg.sender)) {
-    		if(signatures.exporterAuthority > 0) {
-    			return false;
-    		}
-    		signatures.exporterAuthority = 111111;
-    	} else if(Participant(participants.source).isValidImportingAgent(msg.sender)) {
-    		if(signatures.importerAuthority > 0) {
-    			return false;
-    		}
-    		signatures.importerAuthority = 222222;
-    	} else if(msg.sender == User(parties.importer).owner()) {
-    		if(signatures.importer > 0) {
-    			return false;
-    		}
-    		signatures.importer = 333333;
-    	} else {
-    		return false;
-    	}
+    function getSignatures() public returns (uint[4]) {
+        return [signatures.exporter.date,
+            signatures.importer.date, 
+            signatures.exporterAuthority.date,
+            signatures.importerAuthority.date
+        ];
+    }
 
-    	if(hasRequiredSignatures()) {
-    		state = State.Issued;
-    		Issued(this);
-    	}
-    	return true;
+    function canSign() public returns (bool) {
+        if(ParticipantAuthority(Participant(participants.source).getExportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
+            if(signatures.exporterAuthority.date > 0) {
+                return false;
+            }
+            return true;
+        } else if(ParticipantAuthority(Participant(participants.destination).getImportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
+            if(signatures.importerAuthority.date > 0) {
+                return false;
+            }
+            return true;
+        } else if(msg.sender == User(parties.importer).owner()) {
+            if(signatures.importer.date > 0) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    function sign() returns (bool) {
+        if(ParticipantAuthority(Participant(participants.source).getExportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
+            if(signatures.exporterAuthority.date > 0) {
+                return false;
+            }
+            Signed(msg.sender, "Exporting Authority");
+            signatures.exporterAuthority = Signature(now, msg.sender);
+        } else if(ParticipantAuthority(Participant(participants.destination).getImportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
+            if(signatures.importerAuthority.date > 0) {
+                return false;
+            }
+            Signed(msg.sender, "Importing Authority");
+            signatures.importerAuthority = Signature(now, msg.sender);
+        } else if(msg.sender == User(parties.importer).owner()) {
+            if(signatures.importer.date > 0) {
+                return false;
+            }
+            Signed(msg.sender, "Importing Party");
+            signatures.importer = Signature(now, msg.sender);
+        } else {
+            return false;
+        }
+
+        numberOfSignatures++;
+
+        if(hasRequiredSignatures()) {
+            state = State.Issued;
+            Issued(this);
+        }
+        return true;
     }
 
     function hasRequiredSignatures() returns (bool isComplete) {
-    	return (signatures.importerAuthority > 0 && signatures.exporterAuthority > 0 && signatures.importer > 0 && signatures.exporter > 0);
+        return (signatures.importerAuthority.date > 0 && signatures.exporterAuthority.date > 0 && signatures.importer.date > 0 && signatures.exporter.date > 0);
     }
 
     function isValid() returns (bool) {

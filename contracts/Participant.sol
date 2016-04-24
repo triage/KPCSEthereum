@@ -1,5 +1,5 @@
 import {Administrator} from "./Administrator.sol";
-import {UserType} from "./User.sol";
+import {UserType, User} from "./User.sol";
 import {ParticipantAuthority} from "./ParticipantAuthority.sol";
 
 /*
@@ -17,46 +17,64 @@ contract Participant is Administrator("name", 0x0) {
 		address importing;
 		address exporting;
 	}
-	Authorities public authorities;
+	Authorities private authorities;
+
+	event ImportingAuthorityAcceptedRegistered(address authority);
+	event ExportingAuthorityAcceptedRegistered(address authority);
 
 	function Participant(string _name, address _administrator) {
 		name = _name;
 		administrator = _administrator;
 		owner = msg.sender;
 		ParticipantCreated(this, name, administrator);
+		authorities = Authorities(0x0, 0x0);
 	}
 
 	function getType() public returns (int) {
 		return UserType.Participant();
 	}
 
-	function isValidImportingAgent(address _agentAddress) returns (bool) {
-		return ParticipantAuthority(authorities.importing).isRegisteredAgent(_agentAddress);
+	function getImportingAuthority() returns (address) {
+		return authorities.importing;
 	}
 
-	function isValidExportingAgent(address _agentAddress) returns (bool) {
-		return ParticipantAuthority(authorities.exporting).isRegisteredAgent(_agentAddress);
+	function getExportingAuthority() returns (address) {
+		return authorities.exporting;
 	}
 
-	//TODO: implement
-	//by KPCS bylaws, suspending a member must be by unanimous decision
-	// function suspend() public returns (bool) {
-	// 	return false;
+	// function isSenderValidImportingAgent() returns (bool) {
+	// 	return ParticipantAuthority(authorities.importing).isSenderRegisteredAgent();
 	// }
 
-	function registerAsImportingAuthority(address _address) public returns (bool) {
+	// function isSenderValidExportingAgent() returns (bool) {
+	// 	return ParticipantAuthority(authorities.exporting).isSenderRegisteredAgent();
+	// }
+
+	function isAcceptedImportingAuthority(address authority) returns (bool) {
+		return authorities.importing == authority;
+	}
+
+	function isAcceptedExportingAuthority(address authority) returns (bool) {
+		return authorities.exporting == authority;
+	}
+
+	function acceptAndRegisterAsImportingAuthority(address authority) public returns (bool) {
 		if(msg.sender != owner || authorities.importing != 0x0) {
 			return false;
 		}
-		authorities.importing = _address;
+		authorities.importing = authority;
+		User(authority).accept();
+		ImportingAuthorityAcceptedRegistered(authority);
 		return true;
 	}
 
-	function registerAsExportingAuthority(address _address) public returns (bool) {
+	function acceptAndRegisterAsExportingAuthority(address authority) public returns (bool) {
 		if(msg.sender != owner || authorities.exporting != 0x0) {
 			return false;
 		}
-		authorities.exporting = _address;
+		authorities.exporting = authority;
+		User(authority).accept();
+		ExportingAuthorityAcceptedRegistered(authority);
 		return true;
 	}
 }

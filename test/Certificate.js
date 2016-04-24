@@ -98,7 +98,7 @@ contract('KPCS', function(accounts) {
 			}
 		).then(
 			function() {
-				return Belgium.authority.instance.isSenderRegisteredAgent.call({from: Belgium.agent.from});
+				return Belgium.authority.instance.isSenderRegisteredAgent.call(Belgium.agent.from, {from: Belgium.agent.from});
 			}
 		).then(
 			function(isRegisteredAgent) {
@@ -133,7 +133,7 @@ contract('KPCS', function(accounts) {
 		).then(
 			function(authority) {
 				assert.equal(authority, UAE.authority.instance.address);
-				return UAE.authority.instance.isSenderRegisteredAgent.call({from: UAE.agent.from});
+				return UAE.authority.instance.isSenderRegisteredAgent.call(UAE.agent.from, {from: UAE.agent.from});
 			}
 		).then(
 			function(isRegisteredAgent) {
@@ -189,13 +189,14 @@ contract('KPCS', function(accounts) {
 		).then(
 			function (exportingPartyOwner) {
 				assert.equal(JuliusKlein.from, exportingPartyOwner);
-				//importing party should sign
+			}
+		).then(
+			function() {
 				return MyCertificate.instance.canSign.call({from: ChowTaiFook.from});
-				
 			}
 		).then(
 			function(canSign) {
-				assert.equal(canSign,true);
+				assert.equal(canSign, true);
 				return MyCertificate.instance.sign({from: ChowTaiFook.from});
 			}
 		).then(
@@ -205,28 +206,37 @@ contract('KPCS', function(accounts) {
 		).then(
 			//exporting authority should sign
 			function(signatures) {
-				console.log("------------");
-				console.log(signatures);
-				console.log("------------");
+				return MyCertificate.instance.canSign.call({from: Belgium.agent.from});
+			}
+		).then(
+			function(canSign) {
+				assert.equal(canSign, true);
 				return MyCertificate.instance.sign({from: Belgium.agent.from});
 			}
 		).then(
-			//importing authority should sign
 			function() {
+				return MyCertificate.instance.getSignatures.call();
+			}
+		).then(
+			function(signatures) {
+				return MyCertificate.instance.canSign.call({from: UAE.agent.from});
+			}
+		).then(
+			function(canSign) {
+				assert.equal(canSign, true);
 				return MyCertificate.instance.sign({from: UAE.agent.from});
 			}
 		).then(
 			function() {
-				return MyCertificate.instance.numberOfSignatures.call();
-			}
-		).then(
-			function(numberOfSignatures) {
-				console.log("numberOfSignatures:" + numberOfSignatures);
 				return MyCertificate.instance.getSignatures.call();
 			}
 		).then(
 			function(signatures) {
 				console.log(signatures);
+				return MyCertificate.instance.numberOfSignatures.call();
+			}
+		).then(
+			function(numberOfSignatures) {
 				return MyCertificate.instance.isValid.call();
 			}
 		).then(
