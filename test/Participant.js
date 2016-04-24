@@ -87,7 +87,6 @@ contract('KPCS', function(accounts) {
             }
         ).catch({
             function(e){
-                console.log("CATCH!");
                 console.log(e);
                 done();
             }

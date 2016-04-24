@@ -16,12 +16,12 @@ const JuliusKlein = {name: "Julius Klein Diamonds LLC"};
 //importing party
 const ChowTaiFook = {name: "Chow Tai Fook Jewellery Co. Ltd"};
 
-const MyCertficate = {};
+const MyCertificate = {};
 
 const admin = {};
 
 contract('KPCS', function(accounts) {
-	it("Should be able to create a certicicate, complete it, expire it and check for validity", function(done) {
+	it("Should be able to create a certificate, complete it, expire it and check for validity", function(done) {
 		var kpcs;
 		admin.from = accounts[0];
 		KPCS.new({from: accounts[0]}).then(
@@ -78,10 +78,15 @@ contract('KPCS', function(accounts) {
 		).then(
 			function(instance) {
 				Belgium.authority.instance = instance;
-				return Belgium.authority.instance.accept({from: Belgium.from});
+				return Belgium.instance.acceptAndRegisterAsExportingAuthority(Belgium.authority.instance.address, {from: Belgium.from});
 			}
 		).then(
-			function(accepted) {
+			function() {
+				return Belgium.instance.isAcceptedExportingAuthority.call(Belgium.authority.instance.address);
+			}
+		).then(
+			function(isAccepted) {
+				assert.equal(isAccepted, true);
 				Belgium.agent.from = accounts[8];
 				return ParticipantAgent.new(Belgium.agent.name, Belgium.instance.address, {from: Belgium.agent.from});
 			}
@@ -89,31 +94,60 @@ contract('KPCS', function(accounts) {
 			//create authorities - exporter
 			function(instance) {
 				Belgium.agent.instance = instance;
-				Belgium.agent.instance.accept({from: Belgium.from})
+				return Belgium.authority.instance.acceptAndRegisterParticipantAgent(Belgium.agent.instance.address, {from: Belgium.authority.from});
+			}
+		).then(
+			function() {
+				return Belgium.authority.instance.isSenderRegisteredAgent.call({from: Belgium.agent.from});
+			}
+		).then(
+			function(isRegisteredAgent) {
+				assert.equal(isRegisteredAgent, true);
 				UAE.authority.from = accounts[9];
 				return ParticipantAuthority.new(UAE.authority.name, UAE.instance.address, {from: UAE.authority.from});
 			}
 		).then(
 			function(instance) {
 				UAE.authority.instance = instance;
-				UAE.authority.instance.accept({from: UAE.from})
+				return UAE.instance.acceptAndRegisterAsImportingAuthority(UAE.authority.instance.address, {from: UAE.from});
+			}
+		).then(
+			function() {
+				return UAE.instance.isAcceptedImportingAuthority.call(UAE.authority.instance.address);
+			}
+		).then(
+			function(isAccepted) {
+				assert.equal(isAccepted, true);
 				UAE.agent.from = accounts[10];
-				return ParticipantAgent.new(UAE.agent.name, UAE.instance.address, {from: UAE.agent.from});
+				return ParticipantAgent.new(UAE.agent.name, UAE.authority.instance.address, {from: UAE.agent.from});
 			}
 		).then(
 			function(agent) {
 				UAE.agent.instance = agent;
-				//all particpants created and accepted. Create the importing party
+				return UAE.authority.instance.acceptAndRegisterParticipantAgent(UAE.agent.instance.address, {from: UAE.authority.from});
+			}
+		).then(
+			function() {
+				return UAE.instance.getImportingAuthority.call();
+			}
+		).then(
+			function(authority) {
+				assert.equal(authority, UAE.authority.instance.address);
+				return UAE.authority.instance.isSenderRegisteredAgent.call({from: UAE.agent.from});
+			}
+		).then(
+			function(isRegisteredAgent) {
+				assert.equal(isRegisteredAgent, true);
 				JuliusKlein.from = accounts[5];
 				return Party.new(JuliusKlein.name, admin.from, {from: JuliusKlein.from});
 			}
 		).then(
 			function(party) {
 				JuliusKlein.instance = party;
-				JuliusKlein.instance.accept({from: admin.from});
+				return JuliusKlein.instance.accept({from: admin.from});
 			}
 		).then(
-			function(tx) {
+			function() {
 				//create the exporting party
 				ChowTaiFook.from = accounts[6];
 				return Party.new(ChowTaiFook.name, admin.from, {from: ChowTaiFook.from});
@@ -121,7 +155,7 @@ contract('KPCS', function(accounts) {
 		).then(
 			function(party) {
 				ChowTaiFook.instance = party;
-				ChowTaiFook.instance.accept({from: admin.from});
+				return ChowTaiFook.instance.accept({from: admin.from});
 			}
 		).then(
 			//the exporting party creates the certificate
@@ -130,42 +164,70 @@ contract('KPCS', function(accounts) {
 				return Certificate.new(JuliusKlein.instance.address,
 					ChowTaiFook.instance.address,
 					[SierraLeone.instance.address, Botswana.instance.address],
-					Belgium.agent.from,
-					UAE.agent.from,
+					Belgium.instance.address,
+					UAE.instance.address,
 					{from: JuliusKlein.from});
 			}
 		).then(
 			function(certificate) {
-				MyCertficate.instance = certificate;
+				MyCertificate.instance = certificate;
 				//add a parsel to the certificate
 				//function addParsel(string carats, string value, address[] origins) returns (bool)
-				return MyCertficate.instance.addParsel('100',
+				return MyCertificate.instance.addParsel('100',
 					'$1,000,000',
 					[SierraLeone.instance.address, Botswana.instance.address], {from: ChowTaiFook.from});
 			}
 		).then(
-			//importing party should sign
 			function() {
-				return MyCertficate.instance.sign({from: ChowTaiFook.from});
+				return MyCertificate.instance.getImportingPartyOwner.call();
+			}
+		).then(
+			function(importingPartyOwner) {
+				assert.equal(ChowTaiFook.from, importingPartyOwner)
+				return MyCertificate.instance.getExportingPartyOwner.call();
+			}
+		).then(
+			function (exportingPartyOwner) {
+				assert.equal(JuliusKlein.from, exportingPartyOwner);
+				//importing party should sign
+				return MyCertificate.instance.canSign.call({from: ChowTaiFook.from});
+				
+			}
+		).then(
+			function(canSign) {
+				assert.equal(canSign,true);
+				return MyCertificate.instance.sign({from: ChowTaiFook.from});
+			}
+		).then(
+			function() {
+				return MyCertificate.instance.getSignatures.call();
 			}
 		).then(
 			//exporting authority should sign
-			function(signed) {
-				return MyCertficate.instance.sign({from: Belgium.agent.from});
+			function(signatures) {
+				console.log("------------");
+				console.log(signatures);
+				console.log("------------");
+				return MyCertificate.instance.sign({from: Belgium.agent.from});
 			}
 		).then(
 			//importing authority should sign
-			function(signed) {
-				return MyCertficate.instance.sign({from: UAE.agent.from});
+			function() {
+				return MyCertificate.instance.sign({from: UAE.agent.from});
 			}
 		).then(
-			function(signed) {
-				return MyCertficate.instance.signatures.call();
+			function() {
+				return MyCertificate.instance.numberOfSignatures.call();
+			}
+		).then(
+			function(numberOfSignatures) {
+				console.log("numberOfSignatures:" + numberOfSignatures);
+				return MyCertificate.instance.getSignatures.call();
 			}
 		).then(
 			function(signatures) {
 				console.log(signatures);
-				return MyCertficate.instance.isValid.call();
+				return MyCertificate.instance.isValid.call();
 			}
 		).then(
 			function(isValid) {
