@@ -1,5 +1,3 @@
-// import {Certificate} from "./Certificate.sol";
-// import {Participant} from "./Participant.sol";
 import {KPCSAdministrator} from "./KPCSAdministrator.sol";
 import {User} from "./User.sol";
 import {UserType} from "./UserType.sol";
