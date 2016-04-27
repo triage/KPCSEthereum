@@ -14,11 +14,12 @@ contract('KPCS', function(accounts) {
         ).then(
             function(participant) {
                 Botswana.instance = participant;
-                return kpcs.registerAsParticipant(Botswana.instance.address);
+                return Botswana.instance.accept({from: accounts[0]});
+                
             }
         ).then(
-            function(registered) {
-                return Botswana.instance.accept({from: accounts[0]});
+            function() {
+                return kpcs.registerParticipant(Botswana.instance.address);
             }
         ).then(
             function() {

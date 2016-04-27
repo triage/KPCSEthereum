@@ -24,12 +24,15 @@ contract('KPCS', function(accounts) {
 	it("Should be able to create a certificate, complete it, expire it and check for validity", function(done) {
 		var kpcs;
 		admin.from = accounts[0];
-		KPCS.new({from: accounts[0]}).then(
+		KPCS.new({from: admin.from}).then(
 			function (instance) {
 				kpcs = instance;
+				return kpcs.foo.call();
 			}
 		).then(
-			function() {
+			function(foo) {
+				console.log("foo:" + foo);
+				assert.equal(0,1);
 				Botswana.from = accounts[1];
 				return Participant.new(Botswana.name, admin.from, {from: Botswana.from});
 			}
@@ -59,19 +62,62 @@ contract('KPCS', function(accounts) {
 			}
 		).then(
 			function() {
+				return Botswana.instance.getState.call();
+			}
+		).then(
+			function(state) {
+				assert.equal(state, 1);
+				return kpcs.registerParticipant(Botswana.instance.address, {from: admin.from});
+			}
+		).then(
+			function() {
+				return kpcs.foo.call({from: admin.from});
+			}
+		).then(
+			function(canParticipate) {
+				console.log('foo:');
+				console.log(canParticipate);
+				assert.equal(canParticipate, true);
 				return SierraLeone.instance.accept({from: admin.from});
 			}
 		).then(
 			function() {
+				return kpcs.registerParticipant(SierraLeone.instance.address, {from: admin.from})
+			}
+		).then(
+			function() {
+				return kpcs.participantCanParticipate.call(SierraLeone.instance.address, {from: admin.from});
+			}
+		).then(
+			function(canParticipate) {
+				assert.equal(canParticipate, true);
 				return Belgium.instance.accept({from: admin.from});
 			}
 		).then(
 			function() {
+				return kpcs.registerParticipant(Belgium.instance.address, {from: admin.from})
+			}
+		).then(
+			function() {
+				return kpcs.participantCanParticipate.call(Belgium.instance.address);
+			}
+		).then(
+			function(canParticipate) {
+				assert.equal(canParticipate, true);
 				return UAE.instance.accept({from: admin.from});
 			}
 		).then(
-			//create authorities - importer
 			function() {
+				return kpcs.registerParticipant(UAE.instance.address, {from: admin.from})
+			}
+		).then(
+			function() {
+				return kpcs.participantCanParticipate.call(UAE.instance.address);
+			}
+		).then(
+			//create authorities - importer
+			function(canParticipate) {
+				assert.equal(canParticipate, true);
 				Belgium.authority.from = accounts[7];
 				return ParticipantAuthority.new(Belgium.authority.name, Belgium.instance.address, {from: Belgium.authority.from});
 			}
@@ -179,16 +225,16 @@ contract('KPCS', function(accounts) {
 			}
 		).then(
 			function() {
-				return MyCertificate.instance.getImportingPartyOwner.call();
+				return MyCertificate.instance.getImportingParty.call();
 			}
 		).then(
-			function(importingPartyOwner) {
-				assert.equal(ChowTaiFook.from, importingPartyOwner)
-				return MyCertificate.instance.getExportingPartyOwner.call();
+			function(importingParty) {
+				assert.equal(ChowTaiFook.instance.address, importingParty)
+				return MyCertificate.instance.getExportingParty.call();
 			}
 		).then(
-			function (exportingPartyOwner) {
-				assert.equal(JuliusKlein.from, exportingPartyOwner);
+			function (exportingParty) {
+				assert.equal(JuliusKlein.instance.address, exportingParty);
 			}
 		).then(
 			function() {
@@ -232,12 +278,64 @@ contract('KPCS', function(accounts) {
 			}
 		).then(
 			function(signatures) {
-				console.log(signatures);
 				return MyCertificate.instance.numberOfSignatures.call();
 			}
 		).then(
 			function(numberOfSignatures) {
 				return MyCertificate.instance.isValid.call();
+			}
+		).then(
+			function(isValid) {
+				assert.equal(isValid, true);
+				return kpcs.participantCanParticipate.call(Belgium.instance.address);
+			}
+		).then(
+			function(canParticipate) {
+				assert.equal(canParticipate, true);
+				return kpcs.participantCanParticipate.call(UAE.instance.address);
+			}
+		).then(
+			function(canParticipate) {
+				assert.equal(canParticipate, true);
+				return kpcs.participantCanParticipate.call(Botswana.instance.address);
+			}
+		).then(
+			function(canParticipate) {
+				assert.equal(canParticipate, true);
+				return kpcs.participantCanParticipate.call(SierraLeone.instance.address);
+			}
+		).then(
+			function(canParticipate) {
+				assert.equal(canParticipate, true);
+				//a suspended member should not be able to be part of a certificate
+				return Belgium.instance.suspend({from: admin.from});
+			}
+		).then(
+			function() {
+				return Belgium.instance.getState.call();
+			}
+		).then(
+			function(state) {
+				assert.equal(state, 3);
+				return kpcs.registerCertificate(MyCertificate.instance.address,{from: JuliusKlein.from});
+			}
+		).then(
+			function() {
+				return kpcs.isCertificateRegisteredAndValid.call(MyCertificate.instance.address, {from: JuliusKlein.from});
+			}
+		).then(
+			function(isValid) {
+				assert.equal(isValid, true);
+				//a suspended member should not be able to be part of a certificate
+				return Belgium.instance.accept({from: admin.from});
+			}
+		).then(
+			function() {
+				return kpcs.registerCertificate(MyCertificate.instance.address,{from: JuliusKlein.from});
+			}
+		).then(
+			function() {
+				return kpcs.isCertificateRegisteredAndValid.call(MyCertificate.instance.address, {from: JuliusKlein.from});
 			}
 		).then(
 			function(isValid) {

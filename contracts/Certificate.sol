@@ -15,7 +15,7 @@ contract Certificate {
 		*/
 		Pending, Issued, Expired
 	}
-	State public state = State.Pending;
+	State private state = State.Pending;
 
 	struct Dates {
 		//date the certificate is created + requested
@@ -38,7 +38,7 @@ contract Certificate {
 		address source; //the country we are exporting from
 		address destination; //the country we are importing to
 	}
-	Participants participants;
+	Participants private participants;
 
 	//Authorities: issuing and importing
 	struct Agents {
@@ -109,6 +109,33 @@ contract Certificate {
             numberOfSignatures = 1;
     }
 
+    function getNumberOfParticipantsOrigins() public constant returns (uint) {
+        return participants.origins.length;
+    }
+
+    function getParticipantOriginWithIndex(uint index) public constant returns (address) {
+        return participants.origins[index];
+    }
+
+    function getParticipantSource() public constant returns (address) {
+        return participants.source;
+    }
+
+    function getParticipantDestination() public constant returns (address) {
+        return participants.destination;
+    }
+
+    function getParticipants() public constant returns (address[]) {
+        address[] memory allParticipants = new address[](participants.origins.length + 2);
+        allParticipants[0] = (participants.source);
+        allParticipants[1] = participants.destination;
+        uint origins = participants.origins.length;
+        for(uint i = 0; i<origins; i++) {
+            allParticipants[i + 2] = participants.origins[i];
+        }
+        return allParticipants;
+    }
+
     function addParsel(string carats, string value, address[] origins) returns (bool) {
     	if(msg.sender != owner) {
     		return false;
@@ -117,13 +144,13 @@ contract Certificate {
     	return true;
     }
 
-    function getImportingPartyOwner() public returns (address) {
-        return User(parties.importer).owner();
+    function getImportingParty() public returns (address) {
+        return User(parties.importer);
     }
 
-    function getExportingPartyOwner() public returns (address) {
-    	return User(parties.exporter).owner();
-    }
+    function getExportingParty() public returns (address) {
+        return User(parties.exporter);
+    }    
 
     function getSignatures() public returns (uint[4]) {
         return [signatures.exporter.date,

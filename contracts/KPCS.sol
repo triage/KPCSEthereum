@@ -1,27 +1,32 @@
 import {KPCSAdministrator} from "./KPCSAdministrator.sol";
 import {User} from "./User.sol";
 import {UserType} from "./UserType.sol";
+import {Certificate} from "./Certificate.sol";
+import {UserState} from "./UserState.sol";
+import {Participant} from "./Participant.sol";
+import {Party} from "./Party.sol";
 
 contract KPCS {
 
-	//Administrators
-	mapping(address => bool) public registeredAddresses;
+	event CertificateIssued(address _certificate);
 
-	address public owner;
+	address private owner;
 
-	KPCSAdministrator public administrator;
+	KPCSAdministrator private administrator;
 
 	//all certificates
-	address[] public certificates;
+	mapping(address => address) public certificates;
 
 	//member countries
 	mapping(address => address) public participants;
 
 	//member countries
-	address[] public parties;
+	mapping(address => address) public parties;
+
+	event ParticipantRegistered(address participant);
 
 	function KPCS() {
-		administrator = new KPCSAdministrator("KPCS Administrator");
+		administrator = new KPCSAdministrator("KPCS Administrator", msg.sender);
 		owner = msg.sender;
 	}
 
@@ -29,29 +34,69 @@ contract KPCS {
 		if (msg.sender == owner) suicide(owner);
 	}
 
-	function registered(address _address) private returns (bool) {
-		return (registeredAddresses[_address] == true);
-	}
-
-	function registerAsParty(address _party) public returns (bool) {
-		if(registered(msg.sender) || User(_party).getType() != UserType.Party()) {
-			return false;
+	function registerAsParty(address _party) public {
+		if(msg.sender != owner) {
+			throw;
 		}
-		parties.push(_party);
-		registeredAddresses[msg.sender] = true;
-		return true;
-	}
-
-	function registerAsParticipant(address _participant) public returns (bool) {
-		if(registered(msg.sender) || User(_participant).getType() != UserType.Participant()) {
-			return false;
+		if(User(_party).getType() != UserType.Party() || parties[_party] != 0x0) {
+			throw;
 		}
-		participants[_participant] = _participant;
-		registeredAddresses[msg.sender] = true;
-		return true;
+		parties[_party] = _party;
 	}
 
-	function registeredAsParticipant(address _participant) public returns (bool) {
-		return participants[_participant] != 0x0;
+	function isCertificateRegisteredAndValid(address certificate) returns (bool) {
+		return (Certificate(certificate).isValid() && certificates[certificate] != 0x0);
+	}
+
+	function registerCertificate(address _certificate) {
+		Certificate certificate = Certificate(_certificate);
+		if(certificate.isValid()) {
+
+			if(!participantCanParticipate(Participant(certificate.getParticipantSource()))) {
+				throw;
+			}
+
+			if(!participantCanParticipate(Participant(certificate.getParticipantDestination()))) {
+				throw;
+			}
+
+			uint numberOfParticipantsOrigins = certificate.getNumberOfParticipantsOrigins();
+			for(uint i = 0; i < numberOfParticipantsOrigins; i++) {
+				Participant participant = Participant(certificate.getParticipantOriginWithIndex(i));
+				if(!participantCanParticipate(participant)) {
+					throw;
+				}
+			}
+
+			if(Party(certificate.getImportingParty()).getState() != UserState.Accepted()) {
+				throw;
+			}
+
+			if(Party(certificate.getExportingParty()).getState() != UserState.Accepted()) {
+				throw;
+			}
+
+			certificates[_certificate] = certificate;
+			CertificateIssued(_certificate);
+		}
+		throw;
+	}
+
+	function registerParticipant(address participant) public {
+		if(msg.sender != owner) {
+			throw;
+		}
+		participants[participant] = participant;
+		ParticipantRegistered(participant);
+	}
+
+	function foo() public returns (uint) {
+		return 5;
+	}
+
+	function participantCanParticipate(address participant) public returns (bool) {
+		return true;
+		// return participants[participant] != 0x0;
+		// return participants[participant] != 0x0 && Participant(participant).getState() != UserState.Accepted();
 	}
 }

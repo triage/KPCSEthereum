@@ -22,7 +22,7 @@ contract User {
 		UserStateChanged(this, state, administrator);
 	}
 
-	function setState(uint _state) returns (bool) {
+	function setState(uint _state) public returns (bool) {
 		//user cannot change their own status, can only be done by the issuing administrator
 		if(msg.sender != administrator) {
 			return false;

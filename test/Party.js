@@ -9,12 +9,10 @@ contract('KPCS', function(accounts) {
 			}
 		).then(
 			function() {
-				console.log("new party")
 				return Party.new(JuliusKlein.name, {from: accounts[0]});
 			}
 		).then(
 			function(party) {
-				console.log("got party")
 				done();
 			}
 		).catch({
