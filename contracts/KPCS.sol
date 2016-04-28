@@ -36,10 +36,10 @@ contract KPCS {
 
 	function registerAsParty(address _party) public {
 		if(msg.sender != owner) {
-			throw;
+			return;
 		}
 		if(User(_party).getType() != UserType.Party() || parties[_party] != 0x0) {
-			throw;
+			return;
 		}
 		parties[_party] = _party;
 	}
@@ -68,18 +68,17 @@ contract KPCS {
 				}
 			}
 
-			if(Party(certificate.getImportingParty()).getState() != UserState.Accepted()) {
+			if(User(certificate.getImportingParty()).getState() != UserState.Accepted()) {
 				throw;
 			}
 
-			if(Party(certificate.getExportingParty()).getState() != UserState.Accepted()) {
-				throw;
-			}
+			// if(Party(certificate.getExportingParty()).getState() != UserState.Accepted()) {
+			// 	throw;
+			// }
 
 			certificates[_certificate] = certificate;
 			CertificateIssued(_certificate);
 		}
-		throw;
 	}
 
 	function registerParticipant(address participant) public {
@@ -90,13 +89,7 @@ contract KPCS {
 		ParticipantRegistered(participant);
 	}
 
-	function foo() public returns (uint) {
-		return 5;
-	}
-
 	function participantCanParticipate(address participant) public returns (bool) {
-		return true;
-		// return participants[participant] != 0x0;
-		// return participants[participant] != 0x0 && Participant(participant).getState() != UserState.Accepted();
+		return participants[participant] != 0x0;
 	}
 }

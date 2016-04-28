@@ -27,12 +27,6 @@ contract('KPCS', function(accounts) {
 		KPCS.new({from: admin.from}).then(
 			function (instance) {
 				kpcs = instance;
-				return kpcs.foo.call();
-			}
-		).then(
-			function(foo) {
-				console.log("foo:" + foo);
-				assert.equal(0,1);
 				Botswana.from = accounts[1];
 				return Participant.new(Botswana.name, admin.from, {from: Botswana.from});
 			}
@@ -71,11 +65,10 @@ contract('KPCS', function(accounts) {
 			}
 		).then(
 			function() {
-				return kpcs.foo.call({from: admin.from});
+				return kpcs.participantCanParticipate.call(Botswana.instance.address);
 			}
 		).then(
 			function(canParticipate) {
-				console.log('foo:');
 				console.log(canParticipate);
 				assert.equal(canParticipate, true);
 				return SierraLeone.instance.accept({from: admin.from});
@@ -86,7 +79,7 @@ contract('KPCS', function(accounts) {
 			}
 		).then(
 			function() {
-				return kpcs.participantCanParticipate.call(SierraLeone.instance.address, {from: admin.from});
+				return kpcs.participantCanParticipate.call(SierraLeone.instance.address);
 			}
 		).then(
 			function(canParticipate) {

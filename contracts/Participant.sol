@@ -42,14 +42,6 @@ contract Participant is Administrator("name", 0x0) {
 		return authorities.exporting;
 	}
 
-	// function isSenderValidImportingAgent() returns (bool) {
-	// 	return ParticipantAuthority(authorities.importing).isSenderRegisteredAgent();
-	// }
-
-	// function isSenderValidExportingAgent() returns (bool) {
-	// 	return ParticipantAuthority(authorities.exporting).isSenderRegisteredAgent();
-	// }
-
 	function isAcceptedImportingAuthority(address authority) returns (bool) {
 		return authorities.importing == authority;
 	}

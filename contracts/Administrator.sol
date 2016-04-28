@@ -8,6 +8,6 @@ contract Administrator is User("name", 0x0) {
 	}
 
 	function getType() public returns (int) {
-		throw;
+		return -1;
 	}
 }
