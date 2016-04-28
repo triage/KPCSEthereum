@@ -68,9 +68,9 @@ contract KPCS {
 				}
 			}
 
-			if(User(certificate.getImportingParty()).getState() != UserState.Accepted()) {
-				throw;
-			}
+			// if(User(certificate.getImportingParty()).getState() != UserState.Accepted()) {
+			// 	throw;
+			// }
 
 			// if(Party(certificate.getExportingParty()).getState() != UserState.Accepted()) {
 			// 	throw;
@@ -78,7 +78,9 @@ contract KPCS {
 
 			certificates[_certificate] = certificate;
 			CertificateIssued(_certificate);
+			return;
 		}
+		throw;
 	}
 
 	function registerParticipant(address participant) public {
