@@ -51,31 +51,6 @@ contract KPCS {
 	function registerCertificate(address _certificate) {
 		Certificate certificate = Certificate(_certificate);
 		if(certificate.isValid()) {
-
-			if(!participantCanParticipate(Participant(certificate.getParticipantSource()))) {
-				throw;
-			}
-
-			if(!participantCanParticipate(Participant(certificate.getParticipantDestination()))) {
-				throw;
-			}
-
-			uint numberOfParticipantsOrigins = certificate.getNumberOfParticipantsOrigins();
-			for(uint i = 0; i < numberOfParticipantsOrigins; i++) {
-				Participant participant = Participant(certificate.getParticipantOriginWithIndex(i));
-				if(!participantCanParticipate(participant)) {
-					throw;
-				}
-			}
-
-			// if(User(certificate.getImportingParty()).getState() != UserState.Accepted()) {
-			// 	throw;
-			// }
-
-			// if(Party(certificate.getExportingParty()).getState() != UserState.Accepted()) {
-			// 	throw;
-			// }
-
 			certificates[_certificate] = certificate;
 			CertificateIssued(_certificate);
 			return;
