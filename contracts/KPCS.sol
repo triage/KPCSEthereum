@@ -29,11 +29,11 @@ contract KPCS {
 		owner = msg.sender;
 	}
 
-	function kill() public {
+	function kill() {
 		if (msg.sender == owner) suicide(owner);
 	}
 
-	function registerAsParty(address _party) public {
+	function registerAsParty(address _party) {
 		if(msg.sender != owner) {
 			return;
 		}
@@ -57,7 +57,7 @@ contract KPCS {
 		throw;
 	}
 
-	function registerParticipant(address participant) public {
+	function registerParticipant(address participant) {
 		if(msg.sender != owner) {
 			throw;
 		}
@@ -65,7 +65,7 @@ contract KPCS {
 		ParticipantRegistered(participant);
 	}
 
-	function participantCanParticipate(address participant) public returns (bool) {
+	function participantCanParticipate(address participant) returns (bool) {
 		return participants[participant] != 0x0;
 	}
 }
