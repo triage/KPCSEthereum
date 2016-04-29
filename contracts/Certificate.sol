@@ -110,23 +110,23 @@ contract Certificate {
             numberOfSignatures = 1;
     }
 
-    function getNumberOfParticipantsOrigins() public constant returns (uint) {
+    function getNumberOfParticipantsOrigins() constant returns (uint) {
         return participants.origins.length;
     }
 
-    function getParticipantOriginWithIndex(uint index) public constant returns (address) {
+    function getParticipantOriginWithIndex(uint index) constant returns (address) {
         return participants.origins[index];
     }
 
-    function getParticipantSource() public constant returns (address) {
+    function getParticipantSource() constant returns (address) {
         return participants.source;
     }
 
-    function getParticipantDestination() public constant returns (address) {
+    function getParticipantDestination() constant returns (address) {
         return participants.destination;
     }
 
-    function getParticipants() public constant returns (address[]) {
+    function getParticipants() constant returns (address[]) {
         address[] memory allParticipants = new address[](participants.origins.length + 2);
         allParticipants[0] = (participants.source);
         allParticipants[1] = participants.destination;
@@ -145,15 +145,15 @@ contract Certificate {
     	return true;
     }
 
-    function getImportingParty() public returns (address) {
+    function getImportingParty() returns (address) {
         return User(parties.importer);
     }
 
-    function getExportingParty() public returns (address) {
+    function getExportingParty() returns (address) {
         return User(parties.exporter);
     }    
 
-    function getSignatures() public returns (uint[4]) {
+    function getSignatures() returns (uint[4]) {
         return [signatures.exporter.date,
             signatures.importer.date, 
             signatures.exporterAuthority.date,
@@ -161,7 +161,7 @@ contract Certificate {
         ];
     }
 
-    function canSign() public returns (bool) {
+    function canSign() returns (bool) {
         if(ParticipantAuthority(Participant(participants.source).getExportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
             if(signatures.exporterAuthority.date > 0) {
                 return false;
