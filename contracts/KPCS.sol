@@ -2,7 +2,6 @@ import {KPCSAdministrator} from "./KPCSAdministrator.sol";
 import {User} from "./User.sol";
 import {UserType} from "./UserType.sol";
 import {Certificate} from "./Certificate.sol";
-import {UserState} from "./UserState.sol";
 import {Participant} from "./Participant.sol";
 import {Party} from "./Party.sol";
 

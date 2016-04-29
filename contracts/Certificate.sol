@@ -1,6 +1,7 @@
 import {User} from "./User.sol";
 import {Participant} from "./Participant.sol";
 import {ParticipantAuthority} from "./ParticipantAuthority.sol";
+import {UserState} from "./UserState.sol";
 
 contract Certificate {
 
@@ -165,9 +166,15 @@ contract Certificate {
             if(signatures.exporterAuthority.date > 0) {
                 return false;
             }
+            if(Participant(participants.source).getState() != UserState.Accepted()) {
+                return false;
+            }
             return true;
         } else if(ParticipantAuthority(Participant(participants.destination).getImportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
             if(signatures.importerAuthority.date > 0) {
+                return false;
+            }
+            if(Participant(participants.destination).getState() != UserState.Accepted()) {
                 return false;
             }
             return true;
@@ -185,10 +192,16 @@ contract Certificate {
             if(signatures.exporterAuthority.date > 0) {
                 return false;
             }
+            if(Participant(participants.source).getState() != UserState.Accepted()) {
+                return false;
+            }
             Signed(msg.sender, "Exporting Authority");
             signatures.exporterAuthority = Signature(now, msg.sender);
         } else if(ParticipantAuthority(Participant(participants.destination).getImportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
             if(signatures.importerAuthority.date > 0) {
+                return false;
+            }
+            if(Participant(participants.destination).getState() != UserState.Accepted()) {
                 return false;
             }
             Signed(msg.sender, "Importing Authority");
