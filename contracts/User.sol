@@ -1,5 +1,4 @@
 import {UserType} from "./UserType.sol";
-import {UserState} from "./UserState.sol";
 
 contract User {
 	enum State {
@@ -22,7 +21,7 @@ contract User {
 		UserStateChanged(this, state, administrator);
 	}
 
-	function setState(uint _state) public returns (bool) {
+	function setState(uint _state) returns (bool) {
 		//user cannot change their own status, can only be done by the issuing administrator
 		if(msg.sender != administrator) {
 			return false;
@@ -31,43 +30,40 @@ contract User {
 		return true;
 	}
 
-	function getName() public returns (string) {
+	function getName() returns (string) {
 		return name;
 	}
 
-	function getType() public returns (int) {
+	function getType() returns (int) {
 		throw;
 	}
 
-	function getState() public returns (uint) {
+	function getState() returns (uint) {
 		return uint(state);
 	}
 
-	function accept() public returns (bool) {
-		if(msg.sender != administrator) {
-			return false;
+	function accept() {
+		if(msg.sender != User(administrator).owner() && msg.sender != administrator) {
+			return;
 		}
 		state = State.Accepted;
-		return true;
 	}
 
-	function reject() public returns (bool) {
-		if(msg.sender != administrator) {
-			return false;
+	function reject() {
+		if(msg.sender != User(administrator).owner() && msg.sender != administrator) {
+			return;
 		}
 		state = State.Rejected;
-		return true;
 	}
 
-	function suspend() public returns (bool) {
-		if(msg.sender != administrator) {
-			return false;
+	function suspend() {
+		if(msg.sender != User(administrator).owner() && msg.sender != administrator) {
+			return;
 		}
 		state = State.Suspended;
-		return true;
 	}
 
-	function kill() public {
+	function kill() {
 		if (msg.sender == owner) suicide(owner);
 	}
 }

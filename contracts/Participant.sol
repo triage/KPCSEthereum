@@ -30,7 +30,7 @@ contract Participant is Administrator("name", 0x0) {
 		authorities = Authorities(0x0, 0x0);
 	}
 
-	function getType() public returns (int) {
+	function getType() returns (int) {
 		return UserType.Participant();
 	}
 
@@ -50,22 +50,20 @@ contract Participant is Administrator("name", 0x0) {
 		return authorities.exporting == authority;
 	}
 
-	function acceptAndRegisterAsImportingAuthority(address authority) public returns (bool) {
+	function registerAsImportingAuthority(address authority) returns (bool) {
 		if(msg.sender != owner || authorities.importing != 0x0) {
 			return false;
 		}
 		authorities.importing = authority;
-		User(authority).accept();
 		ImportingAuthorityAcceptedRegistered(authority);
 		return true;
 	}
 
-	function acceptAndRegisterAsExportingAuthority(address authority) public returns (bool) {
+	function registerAsExportingAuthority(address authority) returns (bool) {
 		if(msg.sender != owner || authorities.exporting != 0x0) {
 			return false;
 		}
 		authorities.exporting = authority;
-		User(authority).accept();
 		ExportingAuthorityAcceptedRegistered(authority);
 		return true;
 	}

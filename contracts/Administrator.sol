@@ -7,7 +7,7 @@ contract Administrator is User("name", 0x0) {
 		administrator = _administrator;
 	}
 
-	function getType() public returns (int) {
+	function getType() returns (int) {
 		return -1;
 	}
 }

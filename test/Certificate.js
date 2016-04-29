@@ -27,6 +27,11 @@ contract('KPCS', function(accounts) {
 		KPCS.new({from: admin.from}).then(
 			function (instance) {
 				kpcs = instance;
+				return kpcs.administrator.call();
+			}
+		).then(
+			function(instance) {
+				admin.instance = instance;
 				Botswana.from = accounts[1];
 				return Participant.new(Botswana.name, admin.from, {from: Botswana.from});
 			}
@@ -117,7 +122,11 @@ contract('KPCS', function(accounts) {
 		).then(
 			function(instance) {
 				Belgium.authority.instance = instance;
-				return Belgium.instance.acceptAndRegisterAsExportingAuthority(Belgium.authority.instance.address, {from: Belgium.from});
+				return Belgium.authority.instance.accept({from: Belgium.from});
+			}
+		).then(
+			function() {
+				return Belgium.instance.registerAsExportingAuthority(Belgium.authority.instance.address, {from: Belgium.from});
 			}
 		).then(
 			function() {
@@ -127,13 +136,17 @@ contract('KPCS', function(accounts) {
 			function(isAccepted) {
 				assert.equal(isAccepted, true);
 				Belgium.agent.from = accounts[8];
-				return ParticipantAgent.new(Belgium.agent.name, Belgium.instance.address, {from: Belgium.agent.from});
+				return ParticipantAgent.new(Belgium.agent.name, Belgium.authority.instance.address, {from: Belgium.agent.from});
 			}
 		).then(
 			//create authorities - exporter
 			function(instance) {
 				Belgium.agent.instance = instance;
-				return Belgium.authority.instance.acceptAndRegisterParticipantAgent(Belgium.agent.instance.address, {from: Belgium.authority.from});
+				return Belgium.agent.instance.accept({from: Belgium.authority.from});
+			}
+		).then(
+			function() {
+				return Belgium.authority.instance.registerParticipantAgent(Belgium.agent.instance.address, {from: Belgium.authority.from});
 			}
 		).then(
 			function() {
@@ -148,7 +161,11 @@ contract('KPCS', function(accounts) {
 		).then(
 			function(instance) {
 				UAE.authority.instance = instance;
-				return UAE.instance.acceptAndRegisterAsImportingAuthority(UAE.authority.instance.address, {from: UAE.from});
+				return UAE.authority.instance.accept({from: UAE.from});
+			}
+		).then(
+			function() {
+				return UAE.instance.registerAsImportingAuthority(UAE.authority.instance.address, {from: UAE.from});
 			}
 		).then(
 			function() {
@@ -163,7 +180,11 @@ contract('KPCS', function(accounts) {
 		).then(
 			function(agent) {
 				UAE.agent.instance = agent;
-				return UAE.authority.instance.acceptAndRegisterParticipantAgent(UAE.agent.instance.address, {from: UAE.authority.from});
+				return UAE.agent.instance.accept({from: UAE.authority.from});
+			}
+		).then(
+			function() {
+				return UAE.authority.instance.registerParticipantAgent(UAE.agent.instance.address, {from: UAE.authority.from});
 			}
 		).then(
 			function() {

@@ -25,17 +25,15 @@ contract ParticipantAuthority is Administrator("name", 0x0) {
 		return agents[sender] == true;
 	}
 
-	function acceptAndRegisterParticipantAgent(address agent) public returns (bool) {
-		if(msg.sender != owner || agents[address(User(agent).owner())] == true) {
-			return false;
+	function registerParticipantAgent(address agent) {
+		if(msg.sender != owner || agents[address(User(agent).owner())] == true || User(agent).state() != State.Accepted) {
+			return;
 		}
-		User(agent).accept();
 		agents[address(User(agent).owner())] = true;
 		ParticipantAgentRegistered(agent);
-		return true;
 	}
 
-	function getType() public returns (int) {
+	function getType() returns (int) {
 		return UserType.ParticipantAuthority();
 	}
 }

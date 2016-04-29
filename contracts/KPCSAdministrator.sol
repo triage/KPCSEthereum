@@ -9,7 +9,7 @@ contract KPCSAdministrator is Administrator("name", 0x0) {
 		state = State.Accepted;
 	}
 
-	function getType() public returns (int) {
+	function getType() returns (int) {
 		return UserType.KPCSAdministrator();
 	}
 }

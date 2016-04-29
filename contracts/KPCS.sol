@@ -11,7 +11,7 @@ contract KPCS {
 
 	address private owner;
 
-	KPCSAdministrator private administrator;
+	KPCSAdministrator public administrator;
 
 	//all certificates
 	mapping(address => address) public certificates;
