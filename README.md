@@ -1,9 +1,8 @@
 # KimberlyProcessEthereum
 An implementation of The Kimberley Process's certificate issuance and validation system built on the Ethereum blockchain.
 
-[My complete thoughts on diamonds, the diamond industry and The Kimberley Process are available here.](http://romancingthestones.diamonds)
-
-##[http://romancingthestones.diamonds](http://romancingthestones.diamonds)##
+###[My complete thoughts on diamonds, the diamond industry and The Kimberley Process are available here.](http://romancingthestones.diamonds)###
+###[http://romancingthestones.diamonds](http://romancingthestones.diamonds)###
 
 The Kimberley Process (KP) is a joint government, industry and civil society initiative to stem the flow of conflict diamonds – rough diamonds used by rebel movements to finance wars against legitimate governments.
 
