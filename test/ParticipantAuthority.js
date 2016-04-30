@@ -46,7 +46,7 @@ contract('KPCS', function(accounts) {
 			}
 		).then(
 			function(state) {
-				assert.equal(state, 1); //accepted TODO: replace w/ const
+				assert.equal(state, 1);
 				//assure only the admin can change the state
 				return Authority.instance.reject({from: Authority.from});
 			}

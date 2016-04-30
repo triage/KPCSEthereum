@@ -82,8 +82,6 @@ contract Certificate {
 	event Imported(address indexed certificate);
     event Signed(address from, string name);
 
-    uint public numberOfSignatures;
-
 	/*
 	Certificates should be created by the exporter: the party in possession of the goods.
 	params:
@@ -100,14 +98,16 @@ contract Certificate {
     	address _participantDestination) {
     		owner = msg.sender;
     		parties = Parties(_exporter, _importer);
-    		participants = Participants(_participantOrigin, _participantSource, _participantDestination);
-    		owner = msg.sender;
-            signatures = Signatures(
-                Signature(now, _exporter),
-                Signature(0,0x0),
-                Signature(0,0x0),
-                Signature(0,0x0));
-            numberOfSignatures = 1;
+
+            if(User(parties.exporter).getState() == UserState.Accepted()) {
+                participants = Participants(_participantOrigin, _participantSource, _participantDestination);
+                owner = msg.sender;
+                signatures = Signatures(
+                    Signature(now, _exporter),
+                    Signature(0,0x0),
+                    Signature(0,0x0),
+                    Signature(0,0x0));
+            }
     }
 
     function getNumberOfParticipantsOrigins() constant returns (uint) {
@@ -179,7 +179,7 @@ contract Certificate {
             }
             return true;
         } else if(msg.sender == User(parties.importer).owner()) {
-            if(signatures.importer.date > 0) {
+            if(signatures.importer.date > 0 || User(parties.importer).getState() != UserState.Accepted()) {
                 return false;
             }
             return true;
@@ -207,7 +207,7 @@ contract Certificate {
             Signed(msg.sender, "Importing Authority");
             signatures.importerAuthority = Signature(now, msg.sender);
         } else if(msg.sender == User(parties.importer).owner()) {
-            if(signatures.importer.date > 0) {
+            if(signatures.importer.date > 0 || User(parties.importer).getState() != UserState.Accepted()) {
                 return false;
             }
             Signed(msg.sender, "Importing Party");
@@ -215,8 +215,6 @@ contract Certificate {
         } else {
             return false;
         }
-
-        numberOfSignatures++;
 
         if(hasRequiredSignatures()) {
             state = State.Issued;

@@ -4,7 +4,7 @@ import {UserType} from "./UserType.sol";
 contract Party is User("name", 0x0) {
 	string public contactDetails;
 
-	function Party(string _name, string _contactDetails, address _administrator) {
+	function Party(string _name, address _administrator, string _contactDetails) {
 		name = _name;
 		owner = msg.sender;
 		contactDetails = _contactDetails;

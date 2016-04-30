@@ -11,10 +11,10 @@ const Belgium = {name: "Belgium", authority: {name: "Antwerp World Diamond Centr
 
 //parties
 //exporting party
-const JuliusKlein = {name: "Julius Klein Diamonds LLC"};
+const JuliusKlein = {name: "Julius Klein Diamonds LLC", contact: "580 Fifth Avenue, Suite 500, New York, NY, 10036, USA"};
 
 //importing party
-const ChowTaiFook = {name: "Chow Tai Fook Jewellery Co. Ltd"};
+const ChowTaiFook = {name: "Chow Tai Fook Jewellery Co. Ltd", contact: "38/F, New World Tower, 16-18 Queen’s Road Central, Hong Kong"};
 
 const MyCertificate = {};
 
@@ -199,7 +199,7 @@ contract('KPCS', function(accounts) {
 			function(isRegisteredAgent) {
 				assert.equal(isRegisteredAgent, true);
 				JuliusKlein.from = accounts[5];
-				return Party.new(JuliusKlein.name, admin.instance.address, {from: JuliusKlein.from});
+				return Party.new(JuliusKlein.name, admin.instance.address, JuliusKlein.contact, {from: JuliusKlein.from});
 			}
 		).then(
 			function(party) {
@@ -208,9 +208,14 @@ contract('KPCS', function(accounts) {
 			}
 		).then(
 			function() {
+				return JuliusKlein.instance.getState.call();
+			}
+		).then(
+			function(state) {
+				assert.equal(state, 1);
 				//create the exporting party
 				ChowTaiFook.from = accounts[6];
-				return Party.new(ChowTaiFook.name, admin.instance.address, {from: ChowTaiFook.from});
+				return Party.new(ChowTaiFook.name, admin.instance.address, ChowTaiFook.contact, {from: ChowTaiFook.from});
 			}
 		).then(
 			function(party) {
@@ -218,8 +223,13 @@ contract('KPCS', function(accounts) {
 				return ChowTaiFook.instance.accept({from: admin.from});
 			}
 		).then(
-			//the exporting party creates the certificate
 			function() {
+				return ChowTaiFook.instance.getState.call();
+			}
+		).then(
+			//the exporting party creates the certificate
+			function(state) {
+				assert.equal(state, 1);
 				//function Certificate(address _importer, address _exporter, address[] _participantOrigin, address _participantSource, address _participantDestination) {
 				return Certificate.new(JuliusKlein.instance.address,
 					ChowTaiFook.instance.address,
@@ -288,14 +298,6 @@ contract('KPCS', function(accounts) {
 			}
 		).then(
 			function() {
-				return MyCertificate.instance.getSignatures.call();
-			}
-		).then(
-			function(signatures) {
-				return MyCertificate.instance.numberOfSignatures.call();
-			}
-		).then(
-			function(numberOfSignatures) {
 				return MyCertificate.instance.isValid.call();
 			}
 		).then(
