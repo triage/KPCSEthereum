@@ -1,4 +1,3 @@
-import {KPCSAdministrator} from "./KPCSAdministrator.sol";
 import {User} from "./User.sol";
 import {UserType} from "./UserType.sol";
 import {Certificate} from "./Certificate.sol";
@@ -11,7 +10,7 @@ contract KPCS {
 
 	address private owner;
 
-	KPCSAdministrator public administrator;
+	address public administrator;
 
 	//all certificates
 	mapping(address => address) public certificates;
@@ -24,8 +23,8 @@ contract KPCS {
 
 	event ParticipantRegistered(address participant);
 
-	function KPCS() {
-		administrator = new KPCSAdministrator("KPCS Administrator", msg.sender);
+	function KPCS(address _administrator) {
+		administrator = _administrator;
 		owner = msg.sender;
 	}
 

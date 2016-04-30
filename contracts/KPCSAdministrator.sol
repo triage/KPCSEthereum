@@ -1,15 +1,9 @@
 import {Administrator} from "./Administrator.sol";
-import {User} from "./User.sol";
-import {UserType} from "./UserType.sol";
 
 contract KPCSAdministrator is Administrator("name", 0x0) {
-	function KPCSAdministrator(string _name, address _owner) {
+	function KPCSAdministrator(string _name) {
 		name = _name;
-		owner = _owner;
+		owner = msg.sender;
 		state = State.Accepted;
-	}
-
-	function getType() returns (int) {
-		return UserType.KPCSAdministrator();
 	}
 }

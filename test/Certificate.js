@@ -18,40 +18,40 @@ const ChowTaiFook = {name: "Chow Tai Fook Jewellery Co. Ltd"};
 
 const MyCertificate = {};
 
-const admin = {};
+var admin = {};
+var kpcs;
 
 contract('KPCS', function(accounts) {
 	it("Should be able to create a certificate, complete it, expire it and check for validity", function(done) {
-		var kpcs;
 		admin.from = accounts[0];
-		KPCS.new({from: admin.from}).then(
-			function (instance) {
-				kpcs = instance;
-				return kpcs.administrator.call();
-			}
-		).then(
+		KPCSAdministrator.new({from: admin.from}).then(
 			function(instance) {
 				admin.instance = instance;
+				return KPCS.new(admin.instance.address, {from: admin.from});
+			}
+		).then(
+			function (instance) {
+				kpcs = instance;
 				Botswana.from = accounts[1];
-				return Participant.new(Botswana.name, admin.from, {from: Botswana.from});
+				return Participant.new(Botswana.name, admin.instance.address, {from: Botswana.from});
 			}
 		).then(
 			function(botswana) {
 				Botswana.instance = botswana;
 				SierraLeone.from = accounts[2];
-				return Participant.new(SierraLeone.name, admin.from, {from: SierraLeone.from});
+				return Participant.new(SierraLeone.name, admin.instance.address, {from: SierraLeone.from});
 			}
 		).then(
 			function(sierraLeone) {
 				SierraLeone.instance = sierraLeone;
 				Belgium.from = accounts[3];
-				return Participant.new(Belgium.name, admin.from, {from: Belgium.from});
+				return Participant.new(Belgium.name, admin.instance.address, {from: Belgium.from});
 			}
 		).then(
 			function(belgium) {
 				Belgium.instance = belgium;
 				UAE.from = accounts[4];
-				return Participant.new(UAE.name, admin.from, {from: UAE.from});
+				return Participant.new(UAE.name, admin.instance.address, {from: UAE.from});
 			}
 		).then(
 			function(uae) {
@@ -199,7 +199,7 @@ contract('KPCS', function(accounts) {
 			function(isRegisteredAgent) {
 				assert.equal(isRegisteredAgent, true);
 				JuliusKlein.from = accounts[5];
-				return Party.new(JuliusKlein.name, admin.from, {from: JuliusKlein.from});
+				return Party.new(JuliusKlein.name, admin.instance.address, {from: JuliusKlein.from});
 			}
 		).then(
 			function(party) {
@@ -210,7 +210,7 @@ contract('KPCS', function(accounts) {
 			function() {
 				//create the exporting party
 				ChowTaiFook.from = accounts[6];
-				return Party.new(ChowTaiFook.name, admin.from, {from: ChowTaiFook.from});
+				return Party.new(ChowTaiFook.name, admin.instance.address, {from: ChowTaiFook.from});
 			}
 		).then(
 			function(party) {

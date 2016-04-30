@@ -43,21 +43,21 @@ contract User {
 	}
 
 	function accept() {
-		if(msg.sender != User(administrator).owner() && msg.sender != administrator) {
+		if(msg.sender != User(administrator).owner()) {
 			return;
 		}
 		state = State.Accepted;
 	}
 
 	function reject() {
-		if(msg.sender != User(administrator).owner() && msg.sender != administrator) {
+		if(msg.sender != User(administrator).owner()) {
 			return;
 		}
 		state = State.Rejected;
 	}
 
 	function suspend() {
-		if(msg.sender != User(administrator).owner() && msg.sender != administrator) {
+		if(msg.sender != User(administrator).owner()) {
 			return;
 		}
 		state = State.Suspended;

@@ -1,21 +1,25 @@
 const Botswana = {name: "Botswana"};
 
+const admin = {};
+var kpcs;
+
 contract('KPCS', function(accounts) {
     it("Register as a Participant, and KPCS Administrator should be able to change their state", function(done) {
-        var kpcs;
-        KPCS.new({from: accounts[0]}).then(
-            function (instance) {
-                kpcs = instance;
+        admin.from = accounts[0];
+        KPCSAdministrator.new({from: admin.from}).then(
+            function(instance) {
+                admin.instance = instance;
+                return KPCS.new(admin.instance.address, {from: admin.from});
             }
         ).then(
-            function() {
-                return Participant.new(Botswana.name, accounts[0], {from: accounts[1]});
+            function (instance) {
+                kpcs = instance;
+                return Participant.new(Botswana.name, admin.instance.address, {from: accounts[1]});
             }
         ).then(
             function(participant) {
                 Botswana.instance = participant;
-                return Botswana.instance.accept({from: accounts[0]});
-                
+                return Botswana.instance.accept({from: accounts[0]});   
             }
         ).then(
             function() {
@@ -44,7 +48,7 @@ contract('KPCS', function(accounts) {
             }
         ).then(
             function(administrator) {
-                assert.equal(administrator, accounts[0]); //admniistrator should be == accounts[0]
+                assert.equal(administrator, admin.instance.address); //admniistrator should be == accounts[0]
                 return Botswana.instance.accept({from: accounts[0]});
             }
         ).then(

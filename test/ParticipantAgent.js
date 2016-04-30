@@ -2,35 +2,42 @@ const Botswana = {name: "Botswana"};
 const Authority = {name: "Ministry of Minerals, Energy and Water Resources"};
 const Agent = {name: "Hon Onkokame Kitso Mokaila"};
 
+const admin = {};
+var kpcs;
+
 contract('KPCS', function(accounts) {
 	it("Register as a Participant Agent", function(done) {
-		var kpcs;
-		KPCS.new({from: accounts[0]}).then(
-			function (instance) {
-				kpcs = instance;
-			}
-		).then(
-			function() {
-				return Participant.new(Botswana.name, accounts[0], {from: accounts[1]});
+        admin.from = accounts[0];
+        KPCSAdministrator.new({from: admin.from}).then(
+            function(instance) {
+                admin.instance = instance;
+                return KPCS.new(admin.instance.address, {from: admin.from});
+            }
+        ).then(
+            function (instance) {
+                kpcs = instance;
+                Botswana.from = accounts[1];
+				return Participant.new(Botswana.name, admin.instance.address, {from: Botswana.from});
 			}
 		).then(
 			function(participant) {
 				Botswana.instance = participant;
-				return Botswana.instance.accept({from: accounts[0]});
+				return Botswana.instance.accept({from: admin.from});
 			}
 		).then(
 			function() {
-				return kpcs.registerParticipant(Botswana.instance.address,{from: accounts[0]});
+				return kpcs.registerParticipant(Botswana.instance.address,{from: admin.from});
 			}
 		).then(
 			function(participant) {
-				
-				return ParticipantAuthority.new(Authority.name, accounts[1], {from: accounts[2]});
+				Authority.from = accounts[2];
+				return ParticipantAuthority.new(Authority.name, Botswana.instance.address, {from: Authority.from});
 			}
 		).then(
 			function(authority) {
 				Authority.instance = authority;
-				return ParticipantAgent.new(Agent.name, accounts[2], {from: accounts[3]});
+				Agent.from = accounts[3];
+				return ParticipantAgent.new(Agent.name, Authority.instance.address, {from: Agent.from});
 			}
 		).then(
 			function(agent) {
@@ -44,9 +51,9 @@ contract('KPCS', function(accounts) {
 			}
 		).then(
 			function(administrator) {
-				assert.equal(administrator, accounts[2]);
+				assert.equal(administrator, Authority.instance.address);
 				//approve
-				return Agent.instance.accept({from: accounts[2]});
+				return Agent.instance.accept({from: Authority.from});
 			}
 		).then(
 			function() {

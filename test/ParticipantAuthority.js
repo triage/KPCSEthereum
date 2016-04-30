@@ -1,21 +1,28 @@
 const Botswana = {name: "Botswana"};
 const Authority = {name: "Ministry of Minerals, Energy and Water Resources"};
 
+const admin = {};
+var kpcs;
+
 contract('KPCS', function(accounts) {
 	it("Register as a Participant Authority", function(done) {
-		var kpcs;
-		KPCS.new({from: accounts[0]}).then(
-			function (instance) {
-				kpcs = instance;
-			}
-		).then(
-			function() {
-				return Participant.new(Botswana.name, accounts[0], {from: accounts[1]});
+        admin.from = accounts[0];
+        KPCSAdministrator.new({from: admin.from}).then(
+            function(instance) {
+                admin.instance = instance;
+                return KPCS.new(admin.instance.address, {from: admin.from});
+            }
+        ).then(
+            function (instance) {
+                kpcs = instance;
+                Botswana.from = accounts[1];
+				return Participant.new(Botswana.name, admin.instance.address, {from: Botswana.from});
 			}
 		).then(
 			function(participant) {
 				Botswana.instance = participant;
-				return ParticipantAuthority.new(Authority.name, accounts[1], {from: accounts[2]});
+				Authority.from = accounts[2];
+				return ParticipantAuthority.new(Authority.name, Botswana.instance.address, {from: Authority.from});
 			}
 		).then(
 			function(authority) {
@@ -29,9 +36,9 @@ contract('KPCS', function(accounts) {
 			}
 		).then(
 			function (administrator) {
-				assert.equal(administrator, accounts[1]);
+				assert.equal(administrator, Botswana.instance.address);
 				//participant should approve the authority
-				return Authority.instance.accept({from: accounts[1]});
+				return Authority.instance.accept({from: Botswana.from});
 			}
 		).then(
 			function() {
@@ -41,7 +48,7 @@ contract('KPCS', function(accounts) {
 			function(state) {
 				assert.equal(state, 1); //accepted TODO: replace w/ const
 				//assure only the admin can change the state
-				return Authority.instance.reject({from: accounts[2]});
+				return Authority.instance.reject({from: Authority.from});
 			}
 		).then(
 			function() {
