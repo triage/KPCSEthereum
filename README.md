@@ -12,9 +12,9 @@ __My complete thoughts on diamonds, the diamond industry and The Kimberley Proce
 
 [The Kimberley Process](http://www.kimberleyprocess.com) (KP) is a joint government, industry and civil society initiative to stem the flow of conflict diamonds – rough diamonds used by rebel movements to finance wars against legitimate governments.
 
-Beyond the often-raised criticisms of the policy, scope and rules of the KPCS, flaws in the technical execution of the scheme are quite evident in the integrity of the certificates themselves, and therefore also in the entire process.
+Implementation of the KP is outlined in the [KPCS Core Document].(http://www.kimberleyprocess.com/en/kpcs-core-document)
 
-In order to bring both transparency and integrity to the KP, my proposal is to put the entirety of the certificate issuance process, as well as all participants, authorities, observers, agents and parties, on the Ethereum Blockchain. The specific features of the blockchain (mathematically-enforced integrity, immutability, independence from any trusted 3rd party) would be a dramatic improvement over the current system of paper certificates and their known weaknesses, such as  susceptibility to forgery, varying certificate security features, generous expiration dates (and therefore the possibility of re-use), etc.
+In order to bring both transparency and integrity to the KP, my proposal is to put the entirety of the certificate issuance process, as well as all participants, authorities, observers, agents and parties, on the Ethereum blockchain. The specific features of the blockchain (mathematically-enforced security, immutability, public availability of data) would be a dramatic improvement over the current system of paper certificates and their known weaknesses, such as  susceptibility to forgery, varying certificate security features, generous expiration dates (and therefore the possibility of re-use).
 
 ---
 
@@ -83,8 +83,8 @@ function addParsel(string carats,
 }
 ```
 Each parsel contains:
-- carats (string until Solidity supports floating point numbers)
-- assessed value (string until Solidity supports floating point numbers)
+- carats
+- assessed value
 - participant addresses of geological origins
 
 ###3. Signatures required from:

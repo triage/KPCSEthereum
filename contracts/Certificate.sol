@@ -20,16 +20,16 @@ contract Certificate {
 
     struct Dates {
         //date the certificate is created + requested
-        uint creation;
+        uint created;
 
         //date the certificate is signed by all parties and is officially issued, becoming valid
-        uint issue;
+        uint issued;
 
         //date the shipment is certified by the importing authority
-        uint completion;
+        uint completed;
 
         //default expiration date of the certificate, exercised only if shipment never verified by importing authority
-        uint expiration;
+        uint expired;
     }
     Dates public dates = Dates(now, 0, 0, 0);
 
@@ -63,8 +63,8 @@ contract Certificate {
     Signatures private signatures;
 
     struct Parsel {
-        string carats;
-        string value;
+        uint carats;
+        uint value;
         address[] origins;
     }
     Parsel[] public parsels;
@@ -102,6 +102,7 @@ contract Certificate {
                     Signature(0,0x0),
                     Signature(0,0x0),
                     Signature(0,0x0));
+                dates = Dates(now, 0, 0, now + (60 * 60 * 24 * 30));
             }
     }
 
@@ -132,7 +133,7 @@ contract Certificate {
         return allParticipants;
     }
 
-    function addParsel(string carats, string value, address[] origins) {
+    function addParsel(uint carats, uint value, address[] origins) {
         if(msg.sender != owner) {
             return;
         }
@@ -215,6 +216,7 @@ contract Certificate {
 
         if(hasRequiredSignaturesToValidate()) {
             state = State.Issued;
+            dates.issued = now;
             Issued(this);
         }
     }
@@ -224,12 +226,10 @@ contract Certificate {
             if(signatures.importerAuthorityOnReceipt.date > 0) {
                 return;
             }
-            if(Participant(participants.destination).getState() != UserState.Accepted()) {
-                return;
-            }
-            Complete(msg.sender, "Importing Authority - On Receipt");
+            dates.completed = now;
             signatures.importerAuthorityOnReceipt = Signature(now, msg.sender);
             state = State.Completed;
+            Complete(msg.sender, "Importing Authority - On Receipt");
         }
     }
 
@@ -237,11 +237,15 @@ contract Certificate {
         return (signatures.importerAuthority.date > 0 && signatures.exporterAuthority.date > 0 && signatures.importer.date > 0 && signatures.exporter.date > 0);
     }
 
+    function isExpired() returns (bool) {
+        return (state == State.Expired);
+    }
+
     function isComplete() returns (bool) {
         return (state == State.Completed);
     }
 
     function isValid() returns (bool) {
-        return (state == State.Issued);
+        return (state == State.Issued && now < dates.expired);
     }
 }

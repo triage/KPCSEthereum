@@ -240,8 +240,8 @@ contract('KPCS', function(accounts) {
 		).then(
 			function(certificate) {
 				MyCertificate.instance = certificate;
-				return MyCertificate.instance.addParsel('100',
-					'$1,000,000',
+				return MyCertificate.instance.addParsel(100,
+					1000000,
 					[SierraLeone.instance.address, Botswana.instance.address], {from: ChowTaiFook.from});
 			}
 		).then(
@@ -353,6 +353,15 @@ contract('KPCS', function(accounts) {
 		).then(
 			function(isValid) {
 				assert.equal(isValid, true);
+				return MyCertificate.instance.markAsReceived({from: UAE.agent.from});
+			}
+		).then(
+			function() {
+				return MyCertificate.instance.isComplete.call();
+			}
+		).then(
+			function(isComplete) {
+				assert.equal(isComplete, true);
 				done();
 			}
 		).catch({
