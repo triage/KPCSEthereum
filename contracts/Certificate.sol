@@ -5,55 +5,55 @@ import {UserState} from "./UserState.sol";
 
 contract Certificate {
 
-	address public owner;
+    address public owner;
 
-	enum State {
-		/*
-		Pending: certificate has been created, but awaiting signatures from issuer and either importer or exporter
-		Issued: all signatures received, certificate is valid.
-		Completed: shipment validated upon border crossing
-		Expired: shipment has expired without receiving a 'completed' Event
-		*/
-		Pending, Issued, Expired
-	}
-	State private state = State.Pending;
+    enum State {
+        /*
+        Pending: certificate has been created, but awaiting signatures from issuer and either importer or exporter
+        Issued: all signatures received, certificate is valid.
+        Completed: shipment validated upon border crossing
+        Expired: shipment has expired without receiving a 'completed' Event
+        */
+        Pending, Issued, Completed, Expired
+    }
+    State private state = State.Pending;
 
-	struct Dates {
-		//date the certificate is created + requested
-		uint creation;
+    struct Dates {
+        //date the certificate is created + requested
+        uint creation;
 
-		//date the certificate is signed by all parties and is officially issued, becoming valid
-		uint issue;
+        //date the certificate is signed by all parties and is officially issued, becoming valid
+        uint issue;
 
-		//date the shipment is certified by the importing authority
-		uint completion;
+        //date the shipment is certified by the importing authority
+        uint completion;
 
-		//default expiration date of the certificate, exercised only if shipment never verified by importing authority
-		uint expiration;
-	}
-	Dates public dates = Dates(now, 0, 0, 0);
+        //default expiration date of the certificate, exercised only if shipment never verified by importing authority
+        uint expiration;
+    }
+    Dates public dates = Dates(now, 0, 0, 0);
 
-	//Participants in the KP: member countries of source and destination
-	struct Participants {
-		address[] origins; //the declared origin of the goods
-		address source; //the country we are exporting from
-		address destination; //the country we are importing to
-	}
-	Participants private participants;
+    //Participants in the KP: member countries of source and destination
+    struct Participants {
+        address[] origins; //the declared origin of the goods
+        address source; //the country we are exporting from
+        address destination; //the country we are importing to
+    }
+    Participants private participants;
 
-	//Authorities: issuing and importing
-	struct Agents {
-		address exporter;
-		address importer;
-	}
-	Agents public agents;
+    //Authorities: issuing and importing
+    struct Agents {
+        address exporter;
+        address importer;
+    }
+    Agents public agents;
 
-	//the parties to the transaction: importer and exporter
-	struct Parties {
-		address exporter;
-		address importer;
-	}
-	Parties public parties;
+    //the parties to the transaction: importer and exporter
+    struct Parties {
+        address exporter;
+        address importer;
+    }
+    Parties public parties;
 
     struct Signature {
         uint date;
@@ -68,39 +68,38 @@ contract Certificate {
     }
     Signatures private signatures;
 
-	struct Parsel {
-		string carats;
-		string value;
-		address[] origins;
-	}
-	Parsel[] public parsels;
+    struct Parsel {
+        string carats;
+        string value;
+        address[] origins;
+    }
+    Parsel[] public parsels;
 
-	event Requested(address indexed certificate);
-	event Issued(address indexed certificate);
-	event Expired(address indexed certificate);
-	event Exported(address indexed certificate);
-	event Imported(address indexed certificate);
+    event Requested(address indexed certificate);
+    event Issued(address indexed certificate);
+    event Expired(address indexed certificate);
+    event Exported(address indexed certificate);
+    event Imported(address indexed certificate);
     event Signed(address from, string name);
 
-	/*
-	Certificates should be created by the exporter: the party in possession of the goods.
-	params:
-	- importer - importing Party
-	- exporter - exporting Party
-	- participantOrigin - KPCS Participant (member country) the goods were sourced _from_ ... likely the country of geological origin
-	- participantSource - KPCS Participant (member country) the goods are being sent from
-	- participantDestination - KPCS Participant (member country) the goods are being sent to
-	*/
+    /*
+    Certificates should be created by the exporter: the party in possession of the goods.
+    params:
+    - importer - importing Party
+    - exporter - exporting Party
+    - participantOrigin - KPCS Participant (member country) the goods were sourced _from_ ... likely the country of geological origin
+    - participantSource - KPCS Participant (member country) the goods are being sent from
+    - participantDestination - KPCS Participant (member country) the goods are being sent to
+    */
     function Certificate(address _exporter,
-    	address _importer,
-    	address[] _participantOrigin,
-    	address _participantSource,
-    	address _participantDestination) {
-    		owner = msg.sender;
-    		parties = Parties(_exporter, _importer);
+        address _importer,
+        address _participantSource,
+        address _participantDestination) {
+            owner = msg.sender;
+            parties = Parties(_exporter, _importer);
 
             if(User(parties.exporter).getState() == UserState.Accepted()) {
-                participants = Participants(_participantOrigin, _participantSource, _participantDestination);
+                participants = Participants(new address[](0x0), _participantSource, _participantDestination);
                 owner = msg.sender;
                 signatures = Signatures(
                     Signature(now, _exporter),
@@ -137,12 +136,14 @@ contract Certificate {
         return allParticipants;
     }
 
-    function addParsel(string carats, string value, address[] origins) returns (bool) {
-    	if(msg.sender != owner) {
-    		return false;
-    	}
-    	parsels.push(Parsel(carats, value, origins));
-    	return true;
+    function addParsel(string carats, string value, address[] origins) {
+        if(msg.sender != owner) {
+            return;
+        }
+        parsels.push(Parsel(carats, value, origins));
+        for(uint index = 0; index < origins.length; index++) {
+            participants.origins.push(origins[index]);
+        }
     }
 
     function getImportingParty() returns (address) {
@@ -223,11 +224,18 @@ contract Certificate {
         return true;
     }
 
+    function markAsReceived() {
+        if(msg.sender != User(agents.importer).owner()) {
+            return;
+        }
+        state = State.Completed;
+    }
+
     function hasRequiredSignatures() returns (bool isComplete) {
         return (signatures.importerAuthority.date > 0 && signatures.exporterAuthority.date > 0 && signatures.importer.date > 0 && signatures.exporter.date > 0);
     }
 
     function isValid() returns (bool) {
-    	return (state == State.Issued);
+        return (state == State.Issued);
     }
 }
