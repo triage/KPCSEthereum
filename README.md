@@ -76,8 +76,8 @@ Each certificate contains the following data:
 ###2. Parsels are added to the certificate:
 ```solidity
 //Certificate.sol
-function addParsel(string carats,
-	string value,
+function addParsel(uint carats,
+	uint value,
 	address[] origins) {
 		...
 }
@@ -85,7 +85,7 @@ function addParsel(string carats,
 Each parsel contains:
 - carats
 - assessed value
-- participant addresses of geological origins
+- participant addresses of participant countries of geological origins
 
 ###3. Signatures required from:
 1. importing party
