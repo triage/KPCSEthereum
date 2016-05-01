@@ -44,29 +44,28 @@ An entity or individual acting as either the source or destination of the shipme
 
 ```solidity
 //Certificate.sol:
-
-    function Certificate(address _exporter,
-        address _importer,
-        address _participantSource,
-        address _participantDestination) {
-        ...
-	}
+function Certificate(address _exporter,
+    address _importer,
+    address _participantSource,
+    address _participantDestination) {
+    ...
+}
 ```
 
 Each certificate contains the following data:
 
 1. Participants
-	- origin: geological origins where goods were mined from. This value is not set directly, but is derived from the origins of the parsels.
-	- source: participant country the shipment is being sent from.
-	- destination: participant country the shipment is being sent to.
+	- _origin:_ geological origins where goods were mined from. This value is not set directly, but is derived from the origins of the parsels.
+	- _source:_ participant country the shipment is being sent from.
+	- _destination:_ participant country the shipment is being sent to.
 
 2. Agents
-	- exporting: agent delegated by source participant's exporting authority the power to sign certificates.
-	- importing: agent delegated by destination participant's importing authority the power to sign certificates.
+	- _exporting:_ agent delegated by source participant's exporting authority the power to sign certificates.
+	- _importing:_ agent delegated by destination participant's importing authority the power to sign certificates.
 
 3. Parties
-	- exporting: entity or individual goods are being sent from
-	- importing: entity or individual goods are being sent to
+	- _exporting:_ entity or individual goods are being sent from
+	- _importing:_ entity or individual goods are being sent to
 
 4. Parsels
 	- An array consisting of parsels of goods included in the shipment. Data includes:
@@ -77,12 +76,16 @@ Each certificate contains the following data:
 ###2. Parsels are added to the certificate:
 ```solidity
 //Certificate.sol
-	function addParsel(string carats,
-		string value,
-		address[] origins) {
-			...
-	}
+function addParsel(string carats,
+	string value,
+	address[] origins) {
+		...
+}
 ```
+Each parsel contains:
+- carats (string until Solidity supports floating point numbers)
+- assessed value (string until Solidity supports floating point numbers)
+- participant addresses of geological origins
 
 ###3. Signatures required from:
 1. importing party
@@ -91,9 +94,9 @@ Each certificate contains the following data:
 
 ```solidity
 //Certificate.sol
-	function sign() {
-		...
-	}
+function sign() {
+	...
+}
 ```
 
 Upon receipt of the last required signature, the certificate is issued and shipment is cleared for transit.
@@ -102,9 +105,9 @@ Upon receipt of the last required signature, the certificate is issued and shipm
 
 ```solidity
 //Certificate.sol:
-	function markAsReceived() {
-		...
-	}
+function markAsReceived() {
+	...
+}
 ```
 
 Upon acknowleged receipt of the shipment, the importing authority marks the certificate as received, completing the certificate.
