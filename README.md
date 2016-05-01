@@ -3,7 +3,7 @@ An implementation of The Kimberley Process's certificate issuance and validation
 
 ---
 
-[My complete thoughts on diamonds, the diamond industry and The Kimberley Process are available here.](http://romancingthestones.diamonds)
+__My complete thoughts on diamonds, the diamond industry and The Kimberley Process are available here:__
 [http://romancingthestones.diamonds](http://romancingthestones.diamonds)
 
 ---
