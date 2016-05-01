@@ -41,13 +41,6 @@ contract Certificate {
     }
     Participants private participants;
 
-    //Authorities: issuing and importing
-    struct Agents {
-        address exporter;
-        address importer;
-    }
-    Agents public agents;
-
     //the parties to the transaction: importer and exporter
     struct Parties {
         address exporter;
@@ -65,6 +58,7 @@ contract Certificate {
         Signature importer;
         Signature exporterAuthority;
         Signature importerAuthority;
+        Signature importerAuthorityOnReceipt;
     }
     Signatures private signatures;
 
@@ -81,6 +75,7 @@ contract Certificate {
     event Exported(address indexed certificate);
     event Imported(address indexed certificate);
     event Signed(address from, string name);
+    event Complete(address from, string name);
 
     /*
     Certificates should be created by the exporter: the party in possession of the goods.
@@ -103,6 +98,7 @@ contract Certificate {
                 owner = msg.sender;
                 signatures = Signatures(
                     Signature(now, _exporter),
+                    Signature(0,0x0),
                     Signature(0,0x0),
                     Signature(0,0x0),
                     Signature(0,0x0));
@@ -188,51 +184,61 @@ contract Certificate {
         return false;
     }
 
-    function sign() returns (bool) {
+    function sign() {
         if(ParticipantAuthority(Participant(participants.source).getExportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
             if(signatures.exporterAuthority.date > 0) {
-                return false;
+                return;
             }
             if(Participant(participants.source).getState() != UserState.Accepted()) {
-                return false;
+                return;
             }
             Signed(msg.sender, "Exporting Authority");
             signatures.exporterAuthority = Signature(now, msg.sender);
         } else if(ParticipantAuthority(Participant(participants.destination).getImportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
             if(signatures.importerAuthority.date > 0) {
-                return false;
+                return;
             }
             if(Participant(participants.destination).getState() != UserState.Accepted()) {
-                return false;
+                return;
             }
             Signed(msg.sender, "Importing Authority");
             signatures.importerAuthority = Signature(now, msg.sender);
         } else if(msg.sender == User(parties.importer).owner()) {
             if(signatures.importer.date > 0 || User(parties.importer).getState() != UserState.Accepted()) {
-                return false;
+                return;
             }
             Signed(msg.sender, "Importing Party");
             signatures.importer = Signature(now, msg.sender);
         } else {
-            return false;
+            return;
         }
 
-        if(hasRequiredSignatures()) {
+        if(hasRequiredSignaturesToValidate()) {
             state = State.Issued;
             Issued(this);
         }
-        return true;
     }
 
     function markAsReceived() {
-        if(msg.sender != User(agents.importer).owner()) {
-            return;
+        if(ParticipantAuthority(Participant(participants.destination).getImportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
+            if(signatures.importerAuthorityOnReceipt.date > 0) {
+                return;
+            }
+            if(Participant(participants.destination).getState() != UserState.Accepted()) {
+                return;
+            }
+            Complete(msg.sender, "Importing Authority - On Receipt");
+            signatures.importerAuthorityOnReceipt = Signature(now, msg.sender);
+            state = State.Completed;
         }
-        state = State.Completed;
     }
 
-    function hasRequiredSignatures() returns (bool isComplete) {
+    function hasRequiredSignaturesToValidate() returns (bool isComplete) {
         return (signatures.importerAuthority.date > 0 && signatures.exporterAuthority.date > 0 && signatures.importer.date > 0 && signatures.exporter.date > 0);
+    }
+
+    function isComplete() returns (bool) {
+        return (state == State.Completed);
     }
 
     function isValid() returns (bool) {
