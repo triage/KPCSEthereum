@@ -1,0 +1,24 @@
+{
+  "build": {
+    "index.html": "index.html",
+    "app.css": [
+      "stylesheets/app.css"
+    ],
+    "images/": "images/"
+  },
+  "deploy": [
+    "KPCS",
+    "Participant",
+    "ParticipantAgent",
+    "ParticipantAuthority",
+    "Party",
+    "Certificate",
+    "User",
+    "UserState",
+    "UserType"
+  ],
+  "rpc": {
+    "host": "localhost",
+    "port": 8545
+  }
+}

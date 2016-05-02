@@ -1,0 +1,22 @@
+{
+  "name": "kpcs",
+  "description": "A simple Ethereum dapp that allows accounts to contribute ether to be redistributed using a weighted random selection.",
+  "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular-route": "~1.4.0",
+    "angular-loader": "~1.4.0",
+    "html5-boilerplate": "~5.2.0",
+    "angular-bootstrap": "~1.2.4",
+    "web3": "~0.15.3",
+    "angularjs-slider": "~2.10.2",
+    "Chart.js": "~1.0.2",
+    "moment": "~2.12.0",
+    "ngSweetAlert": "angular-sweetalert#~1.1.0",
+    "angular-moment": "~0.10.3"
+  },
+  "ignoredDependencies": [
+    "angular"
+  ]
+}

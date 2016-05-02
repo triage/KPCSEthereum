@@ -1,0 +1,19 @@
+{
+  "name": "kpcs",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A implementation of The Kimberley Process Certification System on Ethereum",
+  "license": "MIT",
+  "devDependencies": {
+    "bower": "^1.7.7"
+  },
+  "scripts": {
+    "postinstall": "bower install",
+    "prestart": "npm install",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "compression": "^1.6.1",
+    "express": "^4.13.4"
+  }
+}
