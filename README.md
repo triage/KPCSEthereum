@@ -55,17 +55,17 @@ function Certificate(address _exporter,
 Each certificate contains the following data:
 
 1. Participants
-	- _origin:_ geological origins where goods were mined from. This value is not set directly, but is derived from the origins of the parsels.
-	- _source:_ participant country the shipment is being sent from.
-	- _destination:_ participant country the shipment is being sent to.
+	- _Origins:_ geological origins where goods were mined from. _Note: This value is not set directly, but is derived from the origins of the parsels._
+	- _Source:_ participant country the shipment is being sent from.
+	- _Destination:_ participant country the shipment is being sent to.
 
 2. Agents
-	- _exporting:_ agent delegated by source participant's exporting authority the power to sign certificates.
-	- _importing:_ agent delegated by destination participant's importing authority the power to sign certificates.
+	- _Exporting:_ agent delegated by source participant's exporting authority the power to sign certificates.
+	- _Importing:_ agent delegated by destination participant's importing authority the power to sign certificates.
 
 3. Parties
-	- _exporting:_ entity or individual goods are being sent from
-	- _importing:_ entity or individual goods are being sent to
+	- _Exporting:_ entity or individual goods are being sent from
+	- _Importing:_ entity or individual goods are being sent to
 
 4. Parsels
 	- An array consisting of parsels of goods included in the shipment. Data includes:
@@ -83,14 +83,14 @@ function addParsel(uint carats,
 }
 ```
 Each parsel contains:
-- carats
-- assessed value
-- participant addresses of participant countries of geological origins
+- Carats
+- Assessed value
+- Addresses of participant countries of geological origins
 
 ###3. Signatures required from:
-1. importing party
-2. exporting authority agent
-3. importing authority agent
+1. Importing party
+2. Exporting authority agent
+3. Importing authority agent
 
 ```solidity
 //Certificate.sol
@@ -99,7 +99,7 @@ function sign() {
 }
 ```
 
-Upon receipt of the last required signature, the certificate is issued and shipment is cleared for transit.
+Upon receipt of the last required signature (order is unimportant), the certificate is issued and shipment is cleared for transit.
 
 ###4. Importing authority marks shipment as received:
 
