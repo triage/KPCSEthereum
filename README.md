@@ -12,9 +12,9 @@ __My complete thoughts on diamonds, the diamond industry and The Kimberley Proce
 
 [The Kimberley Process](http://www.kimberleyprocess.com) (KP) is a joint government, industry and civil society initiative to stem the flow of conflict diamonds – rough diamonds used by rebel movements to finance wars against legitimate governments.
 
-Implementation of the KP (including definitions) is outlined in the [KPCS Core Document](http://www.kimberleyprocess.com/en/kpcs-core-document).
+Implementation of the KP is outlined in the [KPCS Core Document](http://www.kimberleyprocess.com/en/kpcs-core-document).
 
-In order to bring both transparency and integrity to the KP, my proposal is to put the entirety of the certificate issuance process, including all participants, authorities, observers, agents and parties, on the Ethereum blockchain. The specific features of the blockchain (mathematically-enforced security, immutability, public availability of data) would be a dramatic improvement over the current system of paper certificates and their known weaknesses, such as  susceptibility to forgery, varying certificate security features, and overly-generous expiration dates (and therefore the possibility of re-use).
+In order to bring both transparency and integrity to the KP, my proposal is to put the entirety of the certificate issuance process, including all participants, authorities, observers, agents and parties, on the Ethereum blockchain. The specific features of the blockchain (cryptographically-enforced security, immutability, transparency, public availability of data) would be a dramatic improvement over the current system of paper certificates and their known weaknesses, such as  susceptibility to forgery, varying certificate security features, and overly-generous expiration dates (and therefore the possibility of re-use).
 
 ---
 
@@ -24,14 +24,14 @@ In order to bring both transparency and integrity to the KP, my proposal is to p
 Member countries that are participants in The Kimberley Process.
 [Here is a current list of participant countries](http://www.kimberleyprocess.com/en/participants)
 
-###Particpant Authority
-An authority designated by the Particpant with the power to issue certificates. For example, the Ministry of Mines and Mineral Resources (Sierra Leone). These authorities do not issue certificates directly, but rather delegate those powers to specific employees, or agents.
+###Participant Authority
+An authority designated by the Particpant with the power to issue certificates. For example, the _Ministry of Mines and Mineral Resources (Sierra Leone)_. These authorities do not issue certificates directly, but rather delegate those powers to specific employees, or agents.
 
 ###Participant Agent
 An individual designated by a Participant Authority with the power to issue certificates.
 
 ###Party
-An entity or individual acting as either the source or destination of the shipment of rough diamonds over international borders.
+An entity or individual acting as either the source or destination of the shipment of rough diamonds over international borders, ie a rough diamond trader, manufacturer or mining company.
 
 ---
 
@@ -52,7 +52,7 @@ function Certificate(address _exporter,
 }
 ```
 
-Each certificate contains the following data:
+Each certificate must contain the following data:
 
 1. Participants
 	- _Origins:_ geological origins where goods were mined from. _Note: This value is not set directly, but is derived from the origins of the parsels._
@@ -89,8 +89,8 @@ Each parsel contains:
 
 ###3. Signatures required from:
 1. Importing party
-2. Exporting authority agent
-3. Importing authority agent
+2. Exporting authority's agent
+3. Importing authority's agent
 
 ```solidity
 //Certificate.sol
