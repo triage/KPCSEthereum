@@ -56,6 +56,7 @@ contract Certificate {
     struct Signatures {
         Signature exporter;
         Signature importer;
+        Signature importerOnReceipt;
         Signature exporterAuthority;
         Signature importerAuthority;
         Signature importerAuthorityOnReceipt;
@@ -98,6 +99,7 @@ contract Certificate {
                 owner = msg.sender;
                 signatures = Signatures(
                     Signature(now, _exporter),
+                    Signature(0,0x0),
                     Signature(0,0x0),
                     Signature(0,0x0),
                     Signature(0,0x0),
@@ -160,6 +162,10 @@ contract Certificate {
     }
 
     function canSign() returns (bool) {
+        if(state != State.Pending) {
+            return false;
+        }
+
         if(ParticipantAuthority(Participant(participants.source).getExportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
             if(signatures.exporterAuthority.date > 0) {
                 return false;
@@ -186,6 +192,10 @@ contract Certificate {
     }
 
     function sign() {
+        if(state != State.Pending) {
+            return;
+        }
+
         if(ParticipantAuthority(Participant(participants.source).getExportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
             if(signatures.exporterAuthority.date > 0) {
                 return;
@@ -222,6 +232,11 @@ contract Certificate {
     }
 
     function markAsReceived() {
+
+        if(state != State.Issued || state != State.Completed) {
+            return;
+        }
+
         if(ParticipantAuthority(Participant(participants.destination).getImportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
             if(signatures.importerAuthorityOnReceipt.date > 0) {
                 return;
@@ -230,6 +245,13 @@ contract Certificate {
             signatures.importerAuthorityOnReceipt = Signature(now, msg.sender);
             state = State.Completed;
             Complete(msg.sender, "Importing Authority - On Receipt");
+        } else if(msg.sender == User(parties.importer).owner()) {
+            if(signatures.importerOnReceipt.date > 0) {
+                return;
+            }
+            signatures.importerOnReceipt = Signature(now, msg.sender);
+            state = State.Completed;
+            Complete(msg.sender, "Importing Party - On Receipt");
         }
     }
 
