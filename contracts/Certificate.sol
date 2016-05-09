@@ -232,11 +232,6 @@ contract Certificate {
     }
 
     function markAsReceived() {
-
-        if(state != State.Issued || state != State.Completed) {
-            return;
-        }
-
         if(ParticipantAuthority(Participant(participants.destination).getImportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
             if(signatures.importerAuthorityOnReceipt.date > 0) {
                 return;
