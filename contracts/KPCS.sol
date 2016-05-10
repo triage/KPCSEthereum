@@ -1,13 +1,12 @@
 import {User} from "./User.sol";
 import {UserType} from "./UserType.sol";
 import {Certificate} from "./Certificate.sol";
-import {Participant} from "./Participant.sol";
-import {UserState} from "./UserState.sol";
-//import {Party} from "./Party.sol";
 
 contract KPCS {
 
 	event CertificateIssued(address _certificate);
+
+	uint private constant UserStateAccepted = 1;
 
 	address private owner;
 
@@ -17,7 +16,7 @@ contract KPCS {
 	mapping(address => address) public certificates;
 
 	//member countries
-	mapping(address => address) public participants;
+	mapping(bytes32 => address) public participants;
 
 	//member countries
 	mapping(address => address) public parties;
@@ -49,7 +48,27 @@ contract KPCS {
 
 	function registerCertificate(address _certificate) {
 		Certificate certificate = Certificate(_certificate);
+		//certificate already verifies state of the participants
 		if(certificate.isValid()) {
+
+			//check that all parties and participants have registered with this instance
+			User participantSource = User(certificate.getParticipantSource());
+			if(!participantCanParticipate(participantSource)) {
+				return;
+			}
+			User participantDestination = User(certificate.getParticipantDestination());
+			if(!participantCanParticipate(participantDestination)) {
+				return;
+			}	
+
+			uint numberOfParticipantsOrigins = certificate.getNumberOfParticipantsOrigins();
+			for(uint i = 0; i < numberOfParticipantsOrigins; i++) {
+				User participant = User(certificate.getParticipantOriginWithIndex(i));
+				if(!participantCanParticipate(participant)) {
+					return;
+				}
+			}
+
 			certificates[_certificate] = certificate;
 			CertificateIssued(_certificate);
 			return;
@@ -58,18 +77,17 @@ contract KPCS {
 	}
 
 	function registerParticipant(address _participant) {
-		uint foobar = User(_participant).getFoobar();
-		// string name = User(_participant).getName.gas(1000)();
-		if((msg.sender != owner || participants[_participant] != 0x0) && foobar > 0) {
-			throw;
+		bytes32 name = User(_participant).getNameHash();
+		if(msg.sender != owner || participants[name] != 0x0) {
+			return;
 		}
 
-		participants[_participant] = _participant;
+		participants[name] = _participant;
 		ParticipantRegistered(_participant);
 	}
 
 	function participantCanParticipate(address _participant) returns (bool) {
-		// && User(_participant).getState() != UserState.Accepted();
-		return participants[_participant] != 0x0;
+		bytes32 name = User(_participant).getNameHash.gas(1000)();
+		return (participants[name] == _participant);
 	}
 }

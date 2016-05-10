@@ -21,10 +21,6 @@ contract User {
 		UserStateChanged(this, state, administrator);
 	}
 
-	function getFoobar() public returns (uint) {
-		return 1;
-	}
-
 	function getOwner() public returns (address) {
 		return owner;
 	}
@@ -40,6 +36,10 @@ contract User {
 
 	function getAdministrator() returns (address) {
 		return administrator;
+	}
+
+	function getNameHash() returns (bytes32) {
+		return sha3(name);
 	}
 
 	function getName() returns (string) {
