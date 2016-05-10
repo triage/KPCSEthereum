@@ -15,7 +15,6 @@ contract ParticipantAgent is Administrator("name", 0x0) {
 
 	function ParticipantAgent(string _name, address _administrator) {
 		name = _name;
-		owner = msg.sender;
 		administrator = _administrator;
 	}
 

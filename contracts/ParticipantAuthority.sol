@@ -17,7 +17,6 @@ contract ParticipantAuthority is Administrator("name", 0x0) {
 
 	function ParticipantAuthority(string _name, address _administrator) {
 		name = _name;
-		owner = msg.sender;
 		administrator = _administrator;
 	}
 

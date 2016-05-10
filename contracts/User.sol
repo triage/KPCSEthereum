@@ -21,6 +21,10 @@ contract User {
 		UserStateChanged(this, state, administrator);
 	}
 
+	function getFoobar() public returns (uint) {
+		return 1;
+	}
+
 	function getOwner() public returns (address) {
 		return owner;
 	}

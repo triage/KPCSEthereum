@@ -58,8 +58,9 @@ contract KPCS {
 	}
 
 	function registerParticipant(address _participant) {
-		// string name = User(_participant).getName.value(0)();
-		if(msg.sender != owner || participants[_participant] != 0x0) {
+		uint foobar = User(_participant).getFoobar();
+		// string name = User(_participant).getName.gas(1000)();
+		if((msg.sender != owner || participants[_participant] != 0x0) && foobar > 0) {
 			throw;
 		}
 
