@@ -1,7 +1,8 @@
 import {User} from "./User.sol";
 import {UserType} from "./UserType.sol";
 import {Certificate} from "./Certificate.sol";
-// import {Participant} from "./Participant.sol";
+import {Participant} from "./Participant.sol";
+import {UserState} from "./UserState.sol";
 //import {Party} from "./Party.sol";
 
 contract KPCS {
@@ -16,7 +17,7 @@ contract KPCS {
 	mapping(address => address) public certificates;
 
 	//member countries
-	mapping(bytes32 => address) public participants;
+	mapping(address => address) public participants;
 
 	//member countries
 	mapping(address => address) public parties;
@@ -56,18 +57,18 @@ contract KPCS {
 		throw;
 	}
 
-	// Participant private __participant;
 	function registerParticipant(address _participant) {
-		// bytes32 name = User(_participant).getName.value(0)({gas: 800});
-		// if(msg.sender != owner || participants[name] != 0x0) {
-		// 	throw;
-		// }
-		participants[name] = _participant;
+		// string name = User(_participant).getName.value(0)();
+		if(msg.sender != owner || participants[_participant] != 0x0) {
+			throw;
+		}
+
+		participants[_participant] = _participant;
 		ParticipantRegistered(_participant);
 	}
 
 	function participantCanParticipate(address _participant) returns (bool) {
-		bytes32 name = User(_participant).getName.value(0)();
-		return participants[name] != 0x0;
+		// && User(_participant).getState() != UserState.Accepted();
+		return participants[_participant] != 0x0;
 	}
 }

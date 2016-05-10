@@ -33,7 +33,7 @@ contract('KPCS', function(accounts) {
         ).then(
             function(state) {
                 assert.equal(state,1);
-                return Botswana.instance.name.call();
+                return Botswana.instance.getName.call();
             }
         ).then(
             function(name) {
@@ -44,7 +44,7 @@ contract('KPCS', function(accounts) {
             function(type) {
                 //type should be == 1 (Participant)
                 assert.equal(type, 1)
-                return Botswana.instance.administrator.call();
+                return Botswana.instance.getAdministrator.call();
             }
         ).then(
             function(administrator) {

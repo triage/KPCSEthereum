@@ -182,7 +182,7 @@ contract Certificate {
                 return false;
             }
             return true;
-        } else if(msg.sender == User(parties.importer).owner()) {
+        } else if(msg.sender == User(parties.importer).getOwner()) {
             if(signatures.importer.date > 0 || User(parties.importer).getState() != UserState.Accepted()) {
                 return false;
             }
@@ -214,7 +214,7 @@ contract Certificate {
             }
             Signed(msg.sender, "Importing Authority");
             signatures.importerAuthority = Signature(now, msg.sender);
-        } else if(msg.sender == User(parties.importer).owner()) {
+        } else if(msg.sender == User(parties.importer).getOwner()) {
             if(signatures.importer.date > 0 || User(parties.importer).getState() != UserState.Accepted()) {
                 return;
             }
@@ -240,7 +240,7 @@ contract Certificate {
             signatures.importerAuthorityOnReceipt = Signature(now, msg.sender);
             state = State.Completed;
             Complete(msg.sender, "Importing Authority - On Receipt");
-        } else if(msg.sender == User(parties.importer).owner()) {
+        } else if(msg.sender == User(parties.importer).getOwner()) {
             if(signatures.importerOnReceipt.date > 0) {
                 return;
             }

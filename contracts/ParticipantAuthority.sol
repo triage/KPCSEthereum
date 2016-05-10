@@ -26,10 +26,10 @@ contract ParticipantAuthority is Administrator("name", 0x0) {
 	}
 
 	function registerParticipantAgent(address agent) {
-		if(msg.sender != owner || agents[address(User(agent).owner())] == true || User(agent).state() != State.Accepted) {
+		if(msg.sender != owner || agents[address(User(agent).getOwner())] == true || User(agent).state() != State.Accepted) {
 			return;
 		}
-		agents[address(User(agent).owner())] = true;
+		agents[address(User(agent).getOwner())] = true;
 		ParticipantAgentRegistered(agent);
 	}
 
