@@ -8,9 +8,9 @@ contract User {
 
 	event UserStateChanged(address user, State state, address administrator);
 
-    address public owner;
-    address public administrator;
-    string public name;
+    address internal owner;
+    address internal administrator;
+    string internal name;
     uint public dateCreated = now;
 
 	function User(string _name, address _administrator) {
@@ -21,6 +21,10 @@ contract User {
 		UserStateChanged(this, state, administrator);
 	}
 
+	function getOwner() public returns (address) {
+		return owner;
+	}
+
 	function setState(uint _state) returns (bool) {
 		//user cannot change their own status, can only be done by the issuing administrator
 		if(msg.sender != administrator) {
@@ -28,6 +32,14 @@ contract User {
 		}
 		state = State(_state);
 		return true;
+	}
+
+	function getAdministrator() returns (address) {
+		return administrator;
+	}
+
+	function getNameHash() returns (bytes32) {
+		return sha3(name);
 	}
 
 	function getName() returns (string) {
@@ -43,21 +55,21 @@ contract User {
 	}
 
 	function accept() {
-		if(msg.sender != User(administrator).owner()) {
+		if(msg.sender != User(administrator).getOwner()) {
 			return;
 		}
 		state = State.Accepted;
 	}
 
 	function reject() {
-		if(msg.sender != User(administrator).owner()) {
+		if(msg.sender != User(administrator).getOwner()) {
 			return;
 		}
 		state = State.Rejected;
 	}
 
 	function suspend() {
-		if(msg.sender != User(administrator).owner()) {
+		if(msg.sender != User(administrator).getOwner()) {
 			return;
 		}
 		state = State.Suspended;

@@ -22,7 +22,7 @@ contract Certificate {
         //date the certificate is created + requested
         uint created;
 
-        //date the certificate is signed by all parties and is officially issued, becoming valid
+        //date the certificate is signed by all parties and is officially issued
         uint issued;
 
         //date the shipment is certified by the importing authority
@@ -56,6 +56,7 @@ contract Certificate {
     struct Signatures {
         Signature exporter;
         Signature importer;
+        Signature importerOnReceipt;
         Signature exporterAuthority;
         Signature importerAuthority;
         Signature importerAuthorityOnReceipt;
@@ -68,6 +69,9 @@ contract Certificate {
         address[] origins;
     }
     Parsel[] public parsels;
+
+    //expire this certificate 30 days in the future
+    uint private constant expirationDateFromNow = now + (60 * 60 * 24 * 30);
 
     event Requested(address indexed certificate);
     event Issued(address indexed certificate);
@@ -101,8 +105,9 @@ contract Certificate {
                     Signature(0,0x0),
                     Signature(0,0x0),
                     Signature(0,0x0),
+                    Signature(0,0x0),
                     Signature(0,0x0));
-                dates = Dates(now, 0, 0, now + (60 * 60 * 24 * 30));
+                dates = Dates(now, 0, 0, expirationDateFromNow);
             }
     }
 
@@ -160,6 +165,10 @@ contract Certificate {
     }
 
     function canSign() returns (bool) {
+        if(state != State.Pending) {
+            return false;
+        }
+
         if(ParticipantAuthority(Participant(participants.source).getExportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
             if(signatures.exporterAuthority.date > 0) {
                 return false;
@@ -176,7 +185,7 @@ contract Certificate {
                 return false;
             }
             return true;
-        } else if(msg.sender == User(parties.importer).owner()) {
+        } else if(msg.sender == User(parties.importer).getOwner()) {
             if(signatures.importer.date > 0 || User(parties.importer).getState() != UserState.Accepted()) {
                 return false;
             }
@@ -186,6 +195,10 @@ contract Certificate {
     }
 
     function sign() {
+        if(state != State.Pending) {
+            return;
+        }
+
         if(ParticipantAuthority(Participant(participants.source).getExportingAuthority()).isSenderRegisteredAgent(msg.sender)) {
             if(signatures.exporterAuthority.date > 0) {
                 return;
@@ -204,7 +217,7 @@ contract Certificate {
             }
             Signed(msg.sender, "Importing Authority");
             signatures.importerAuthority = Signature(now, msg.sender);
-        } else if(msg.sender == User(parties.importer).owner()) {
+        } else if(msg.sender == User(parties.importer).getOwner()) {
             if(signatures.importer.date > 0 || User(parties.importer).getState() != UserState.Accepted()) {
                 return;
             }
@@ -230,6 +243,13 @@ contract Certificate {
             signatures.importerAuthorityOnReceipt = Signature(now, msg.sender);
             state = State.Completed;
             Complete(msg.sender, "Importing Authority - On Receipt");
+        } else if(msg.sender == User(parties.importer).getOwner()) {
+            if(signatures.importerOnReceipt.date > 0) {
+                return;
+            }
+            signatures.importerOnReceipt = Signature(now, msg.sender);
+            state = State.Completed;
+            Complete(msg.sender, "Importing Party - On Receipt");
         }
     }
 

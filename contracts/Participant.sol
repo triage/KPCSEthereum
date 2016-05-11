@@ -25,7 +25,6 @@ contract Participant is Administrator("name", 0x0) {
 	function Participant(string _name, address _administrator) {
 		name = _name;
 		administrator = _administrator;
-		owner = msg.sender;
 		ParticipantCreated(this, name, administrator);
 		authorities = Authorities(0x0, 0x0);
 	}

@@ -42,12 +42,12 @@ contract('KPCS', function(accounts) {
 		).then(
 			function(agent) {
 				Agent.instance = agent;
-				return Agent.instance.name.call();
+				return Agent.instance.getName.call();
 			}
 		).then(
 			function(name) {
 				assert.equal(name, Agent.name);
-				return Agent.instance.administrator.call();
+				return Agent.instance.getAdministrator.call();
 			}
 		).then(
 			function(administrator) {
