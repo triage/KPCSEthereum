@@ -1,5 +1,4 @@
 import {User} from "./User.sol";
-import {UserType} from "./UserType.sol";
 import {Certificate} from "./Certificate.sol";
 
 contract KPCS {
@@ -75,7 +74,7 @@ contract KPCS {
 	}
 
 	function participantCanParticipate(address _participant) returns (bool) {
-		bytes32 name = User(_participant).getNameHash.gas(1000)();
+		bytes32 name = User(_participant).getNameHash();
 		return (participants[name] == _participant);
 	}
 }
