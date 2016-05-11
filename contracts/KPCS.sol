@@ -2,9 +2,6 @@ import {User} from "./User.sol";
 import {Certificate} from "./Certificate.sol";
 
 contract KPCS {
-
-	event CertificateIssued(address _certificate);
-
 	uint private constant UserStateAccepted = 1;
 
 	address private owner;
@@ -17,7 +14,11 @@ contract KPCS {
 	//member countries
 	mapping(bytes32 => address) public participants;
 
-	event ParticipantRegistered(address participant);
+	event ParticipantRegistered(address indexed participant);
+
+	//CertificateValidated: when an issued (has all required signatures) certificate
+	//has been presented to the KPCS instance and added to the list of certificates
+	event CertificateValidated(address indexed certificate);
 
 	function KPCS(address _administrator) {
 		administrator = _administrator;
@@ -57,7 +58,7 @@ contract KPCS {
 			}
 
 			certificates[_certificate] = certificate;
-			CertificateIssued(_certificate);
+			CertificateValidated(_certificate);
 			return;
 		}
 		throw;

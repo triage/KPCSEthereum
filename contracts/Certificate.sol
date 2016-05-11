@@ -22,7 +22,7 @@ contract Certificate {
         //date the certificate is created + requested
         uint created;
 
-        //date the certificate is signed by all parties and is officially issued, becoming valid
+        //date the certificate is signed by all parties and is officially issued
         uint issued;
 
         //date the shipment is certified by the importing authority
@@ -70,6 +70,9 @@ contract Certificate {
     }
     Parsel[] public parsels;
 
+    //expire this certificate 30 days in the future
+    uint private constant expirationDateFromNow = now + (60 * 60 * 24 * 30);
+
     event Requested(address indexed certificate);
     event Issued(address indexed certificate);
     event Expired(address indexed certificate);
@@ -104,7 +107,7 @@ contract Certificate {
                     Signature(0,0x0),
                     Signature(0,0x0),
                     Signature(0,0x0));
-                dates = Dates(now, 0, 0, now + (60 * 60 * 24 * 30));
+                dates = Dates(now, 0, 0, expirationDateFromNow);
             }
     }
 
