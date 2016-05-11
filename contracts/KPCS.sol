@@ -18,9 +18,6 @@ contract KPCS {
 	//member countries
 	mapping(bytes32 => address) public participants;
 
-	//member countries
-	mapping(address => address) public parties;
-
 	event ParticipantRegistered(address participant);
 
 	function KPCS(address _administrator) {
@@ -32,16 +29,6 @@ contract KPCS {
 		if (msg.sender == owner) suicide(owner);
 	}
 
-	function registerAsParty(address _party) {
-		if(msg.sender != owner) {
-			return;
-		}
-		if(User(_party).getType() != UserType.Party() || parties[_party] != 0x0) {
-			return;
-		}
-		parties[_party] = _party;
-	}
-
 	function isCertificateRegisteredAndValid(address certificate) returns (bool) {
 		return (Certificate(certificate).isValid() && certificates[certificate] != 0x0);
 	}
@@ -51,11 +38,12 @@ contract KPCS {
 		//certificate already verifies state of the participants
 		if(certificate.isValid()) {
 
-			//check that all parties and participants have registered with this instance
+			//check that all participants have registered with this instance
 			User participantSource = User(certificate.getParticipantSource());
 			if(!participantCanParticipate(participantSource)) {
 				return;
 			}
+
 			User participantDestination = User(certificate.getParticipantDestination());
 			if(!participantCanParticipate(participantDestination)) {
 				return;
