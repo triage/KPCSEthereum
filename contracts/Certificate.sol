@@ -5,7 +5,7 @@ import {UserState} from "./UserState.sol";
 
 contract Certificate {
 
-    address public owner;
+    address public constant owner = msg.sender;
 
     enum State {
         /*
@@ -94,12 +94,10 @@ contract Certificate {
         address _importer,
         address _participantSource,
         address _participantDestination) {
-            owner = msg.sender;
             parties = Parties(_exporter, _importer);
 
             if(User(parties.exporter).getState() == UserState.Accepted()) {
                 participants = Participants(new address[](0x0), _participantSource, _participantDestination);
-                owner = msg.sender;
                 signatures = Signatures(
                     Signature(now, _exporter),
                     Signature(0,0x0),
