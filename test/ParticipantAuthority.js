@@ -27,12 +27,12 @@ contract('KPCS', function(accounts) {
 		).then(
 			function(authority) {
 				Authority.instance = authority;
-				return Authority.instance.name.call();
+				return Authority.instance.getName.call();
 			}
 		).then(
 			function(name) {
 				assert.equal(name, Authority.name);
-				return Authority.instance.administrator.call();
+				return Authority.instance.getAdministrator.call();
 			}
 		).then(
 			function (administrator) {
