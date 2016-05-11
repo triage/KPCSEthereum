@@ -14,11 +14,11 @@ contract KPCS {
 	//member countries
 	mapping(bytes32 => address) public participants;
 
-	event ParticipantRegistered(address indexed participant);
+	event ParticipantRegistered(address indexed participant, uint date);
 
 	//CertificateValidated: when an issued (has all required signatures) certificate
 	//has been presented to the KPCS instance and added to the list of certificates
-	event CertificateValidated(address indexed certificate);
+	event CertificateValidated(address indexed certificate, uint date);
 
 	function KPCS(address _administrator) {
 		administrator = _administrator;
@@ -58,7 +58,7 @@ contract KPCS {
 			}
 
 			certificates[_certificate] = certificate;
-			CertificateValidated(_certificate);
+			CertificateValidated(_certificate, now);
 			return;
 		}
 		throw;
@@ -71,7 +71,7 @@ contract KPCS {
 		}
 
 		participants[name] = _participant;
-		ParticipantRegistered(_participant);
+		ParticipantRegistered(_participant, now);
 	}
 
 	function participantCanParticipate(address _participant) returns (bool) {
