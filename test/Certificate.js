@@ -21,20 +21,6 @@ const MyCertificate = {};
 var admin = {};
 var kpcs;
 
-accounts = [
-0xc29665f2B7FD145af9F63c15b2da0A0Df7a286fa,
-0x52D63E4008557500952096217633AC8493db2f15,
-0xD074508229142Cb12a325123784679A9dBD44d7c,
-0xb45AB7a52A2C2c7720EE26d008a96C08fb6f59aF,
-0xb45AB7a52A2C2c7720EE26d008a96C08fb6f59aF,
-0xCC0b757E55c18786Ce16C353BEa54BcD2bD88B38,
-0xd64f4578a52dDfcbaF62Acc10aDd29D06054dD8D,
-0xdC07dF62B99e15f065A7C802D6f9Ee97c1211814,
-0xD9b2E3089d43e4bE007e48046a1a793B7F1Af904,
-0x64263293DC6d76936fE3B257Cc91f026146a36eb,
-0xe6B512D43536d43CA0Dec52dd4852F69Dd731F8b
-];
-
 contract('KPCS', function(accounts) {
 	it("Should be able to create a certificate, complete it, expire it and check for validity", function(done) {
 		admin.from = accounts[0];
