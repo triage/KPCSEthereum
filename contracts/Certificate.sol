@@ -6,6 +6,7 @@ import {UserState} from "./UserState.sol";
 contract Certificate {
 
     address public constant owner = msg.sender;
+    address public kpcs;
 
     enum State {
         /*
@@ -14,9 +15,9 @@ contract Certificate {
         Completed: shipment validated upon border crossing
         Expired: shipment has expired without receiving a 'completed' Event
         */
-        Pending, Issued, Completed, Expired
+        Created, Pending, Issued, Completed, Expired
     }
-    State private state = State.Pending;
+    State private state = State.Created;
 
     struct Dates {
         //date the certificate is created + requested
@@ -73,12 +74,26 @@ contract Certificate {
     //expire this certificate 30 days in the future
     uint private constant expirationDateFromNow = now + (60 * 60 * 24 * 30);
 
-    event Requested(address indexed certificate);
+    //when the certificate is created by the exporting party
+    event Created(address indexed certificate);
+
+    //when the parsels have been added, and the certificate is awaiting signing by parties and authorities
+    event Pending(address indexed certificate,
+        address exporter,
+        address importer,
+        address participantSource,
+        address participantDestination);
+
+    //when all required parties and authorities have signed the certificate
     event Issued(address indexed certificate);
-    event Expired(address indexed certificate);
-    event Exported(address indexed certificate);
-    event Imported(address indexed certificate);
+
+    //when a certificate has been signed by a party of authority's agent
     event Signed(address from, string name);
+
+    event Expired(address indexed certificate);
+
+    //when a certificate completes transit of an international border,
+    //and is marked as received by the improting authority
     event Complete(address from, string name);
 
     /*
@@ -86,16 +101,18 @@ contract Certificate {
     params:
     - importer - importing Party
     - exporter - exporting Party
-    - participantOrigin - KPCS Participant (member country) the goods were sourced _from_ ... likely the country of geological origin
+    - participantOrigin - KPCS Participant (member country) the goods were sourced _from_
+      ... likely the country of geological origin
     - participantSource - KPCS Participant (member country) the goods are being sent from
     - participantDestination - KPCS Participant (member country) the goods are being sent to
     */
-    function Certificate(address _exporter,
+    function Certificate(address _kpcs,
+        address _exporter,
         address _importer,
         address _participantSource,
         address _participantDestination) {
+            kpcs = _kpcs;
             parties = Parties(_exporter, _importer);
-
             if(User(parties.exporter).getState() == UserState.Accepted()) {
                 participants = Participants(new address[](0x0), _participantSource, _participantDestination);
                 signatures = Signatures(
@@ -106,7 +123,14 @@ contract Certificate {
                     Signature(0,0x0),
                     Signature(0,0x0));
                 dates = Dates(now, 0, 0, expirationDateFromNow);
+                Created(this);
             }
+    }
+
+    function kill() {
+        if (msg.sender == owner && state == State.Pending) {
+            suicide(owner);
+        }
     }
 
     function getNumberOfParticipantsOrigins() constant returns (uint) {
@@ -137,13 +161,21 @@ contract Certificate {
     }
 
     function addParsel(uint carats, uint value, address[] origins) {
-        if(msg.sender != owner) {
+        if(msg.sender != owner || state != State.Created) {
             return;
         }
         parsels.push(Parsel(carats, value, origins));
         for(uint index = 0; index < origins.length; index++) {
             participants.origins.push(origins[index]);
         }
+    }
+
+    function completedAddingParsels() {
+        if(msg.sender != owner || state != State.Created) {
+            return;
+        }
+        state = State.Pending;
+        Pending(this, parties.exporter, parties.importer, participants.source, participants.destination);
     }
 
     function getImportingParty() returns (address) {
@@ -253,6 +285,13 @@ contract Certificate {
 
     function hasRequiredSignaturesToValidate() returns (bool isComplete) {
         return (signatures.importerAuthority.date > 0 && signatures.exporterAuthority.date > 0 && signatures.importer.date > 0 && signatures.exporter.date > 0);
+    }
+
+    function expireIfNecessary() {
+        if(now >= dates.expired && state == State.Issued) {
+            state = State.Expired;
+        }
+        Expired(this);
     }
 
     function isExpired() returns (bool) {
