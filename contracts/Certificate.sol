@@ -10,7 +10,8 @@ contract Certificate {
 
     enum State {
         /*
-        Pending: certificate has been created, but awaiting signatures from issuer and either importer or exporter
+        Created: certificate has been created, but awaiting addition of parsels
+        Pending: parsels added, awaiting signatures from issuer and either importer or exporter
         Issued: all signatures received, certificate is valid.
         Completed: shipment validated upon border crossing
         Expired: shipment has expired without receiving a 'completed' Event
