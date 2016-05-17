@@ -230,8 +230,8 @@ contract('KPCS', function(accounts) {
 			//the exporting party creates the certificate
 			function(state) {
 				assert.equal(state, 1);
-				//function Certificate(address _importer, address _exporter, address[] _participantOrigin, address _participantSource, address _participantDestination) {
-				return Certificate.new(JuliusKlein.instance.address,
+				return Certificate.new(kpcs.address,
+					JuliusKlein.instance.address,
 					ChowTaiFook.instance.address,
 					Belgium.instance.address,
 					UAE.instance.address,
@@ -243,6 +243,10 @@ contract('KPCS', function(accounts) {
 				return MyCertificate.instance.addParsel(100,
 					1000000,
 					[SierraLeone.instance.address, Botswana.instance.address], {from: ChowTaiFook.from});
+			}
+		).then(
+			function() {
+				return MyCertificate.instance.completedAddingParsels({from: JuliusKlein.from});
 			}
 		).then(
 			function() {
