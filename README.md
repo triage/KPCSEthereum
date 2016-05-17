@@ -44,10 +44,11 @@ An entity or individual acting as either the source or destination of the shipme
 
 ```solidity
 //Certificate.sol:
-function Certificate(address _exporter,
-    address _importer,
-    address _participantSource,
-    address _participantDestination) {
+    function Certificate(address _kpcs,
+        address _exporter,
+        address _importer,
+        address _participantSource,
+        address _participantDestination)
     ...
 }
 ```
@@ -87,7 +88,9 @@ Each parsel contains:
 - Assessed value
 - Addresses of participant countries of geological origins
 
-###3. Signatures required from:
+Finally, the creator must call: `Certificate.completedAddingParsels` to complete the parsel addition process, and request the authorities and parties to sign the certificate
+
+###4. Signatures required from:
 1. Importing party
 2. Exporting authority's agent
 3. Importing authority's agent
@@ -99,9 +102,12 @@ function sign() {
 }
 ```
 
-Upon receipt of the last required signature (order is unimportant), the certificate is issued and shipment is cleared for transit.
+Upon receipt of the last required signature (order is unimportant), the certificate is issued and shipment is cleared for validation.
 
-###4. Importing authority marks shipment as received:
+###5. Certificate must be added to the main instance of KPCS.
+This ensures that all participants noted on the certificate are recognized by the main instance of KPCS, therefore validating the certificate and adding a reference to it to from the main instance.
+
+###6. Importing authority marks shipment as received:
 
 ```solidity
 //Certificate.sol:
@@ -111,3 +117,4 @@ function markAsReceived() {
 ```
 
 Upon acknowleged receipt of the shipment, the importing authority marks the certificate as received, completing the certificate.
+Note: KPCS Core Documents marks this step as optional.
