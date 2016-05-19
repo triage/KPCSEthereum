@@ -92,7 +92,7 @@ Each parsel contains:
 
 Finally, the creator must call: `Certificate.completedAddingParsels` to complete the parsel addition process, and request the authorities and parties to sign the certificate
 
-###4. Signatures required from:
+###3. Await signatures from:
 1. Importing party
 2. Exporting authority's agent
 3. Importing authority's agent
@@ -104,12 +104,12 @@ function sign() {
 }
 ```
 
-Upon receipt of the last required signature (order is unimportant), the certificate is issued and shipment is cleared for validation.
+Upon receipt of the last required signature (order is unimportant), the certificate is issued and shipment is cleared for the final step: validation.
 
-###5. Certificate must be added to the main instance of KPCS.
-This ensures that all participants noted on the certificate are recognized by the main instance of KPCS, therefore validating the certificate and adding a reference to it to from the main instance.
+###4. Certificate must be added to the main instance of KPCS.
+This ensures that all participants noted on the certificate are recognized by the main instance of KPCS, therefore validating the certificate and adding a reference to it to from the main KPCS instance.
 
-###6. Importing authority marks shipment as received:
+###5. Importing authority marks shipment as received:
 
 ```solidity
 //Certificate.sol:
@@ -119,4 +119,4 @@ function markAsReceived() {
 ```
 
 Upon acknowleged receipt of the shipment, the importing authority marks the certificate as received, completing the certificate.
-Note: KPCS Core Documents marks this step as optional.
+Note: according to the KPCS Core Document, this step is optional.
