@@ -14,7 +14,7 @@ __My complete thoughts on diamonds, the diamond industry and The Kimberley Proce
 
 Implementation of the KP is outlined in the [KPCS Core Document](http://www.kimberleyprocess.com/en/kpcs-core-document).
 
-In order to bring both transparency and integrity to the KP, my proposal is to put the entirety of the certificate issuance process, including all participants, authorities, observers, agents and parties, on the Ethereum blockchain. The specific features of the blockchain (cryptographically-enforced security, immutability, transparency, public availability of data) would be a dramatic improvement over the current system of paper certificates and their known weaknesses, such as  susceptibility to forgery, varying certificate security features, and overly-generous expiration dates (and therefore the possibility of re-use).
+In order to bring both transparency and integrity to the KP, my proposal is to put the entirety of the certificate issuance process, including all participants, authorities, observers, agents and parties, on the Ethereum blockchain. The specific features of the blockchain (cryptographically-enforced security, immutability, transparency, public availability of data) could be a dramatic improvement over the current system of paper certificates and their known weaknesses, such as forgery, varying certificate security features and design, and overly-generous expiration dates (and therefore the possibility of re-use).
 
 [A more general overview of my proposal is available here on Medium.com](https://medium.com/@jacksonadams/my-complete-thoughts-on-diamonds-are-here-5e1a27e2acbe#.th0kk2edm)
 
