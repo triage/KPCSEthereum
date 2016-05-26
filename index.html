@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>KPCS Ethereum by triage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">KPCS Ethereum</h1>
+      <h2 class="project-tagline">An implementation of The Kimberley Process&#39; certificate issuing process built on the Ethereum blockchain</h2>
+      <a href="https://github.com/triage/KPCSEthereum" class="btn">View on GitHub</a>
+      <a href="https://github.com/triage/KPCSEthereum/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/triage/KPCSEthereum/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="kimberlyprocessethereum" class="anchor" href="#kimberlyprocessethereum" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>KimberlyProcessEthereum</h1>
+
+<p>An implementation of The Kimberley Process's certificate issuance and validation system built on the Ethereum blockchain.</p>
+
+<hr>
+
+<p><strong>My complete thoughts on diamonds, the diamond industry and The Kimberley Process are available here:</strong>
+<a href="http://romancingthestones.diamonds">http://romancingthestones.diamonds</a></p>
+
+<hr>
+
+<h2>
+<a id="about" class="anchor" href="#about" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>About</h2>
+
+<p><a href="http://www.kimberleyprocess.com">The Kimberley Process</a> (KP) is a joint government, industry and civil society initiative to stem the flow of conflict diamonds – rough diamonds used by rebel movements to finance wars against legitimate governments.</p>
+
+<p>Implementation of the KP is outlined in the <a href="http://www.kimberleyprocess.com/en/kpcs-core-document">KPCS Core Document</a>.</p>
+
+<p>In order to bring both transparency and integrity to the KP, my proposal is to put the entirety of the certificate issuance process, including all participants, authorities, observers, agents and parties, on the Ethereum blockchain. The specific features of the blockchain (cryptographically-enforced security, immutability, transparency, public availability of data) could be a dramatic improvement over the current system of paper certificates and their known weaknesses, such as forgery, varying certificate security features and design, and overly-generous expiration dates (and therefore the possibility of re-use).</p>
+
+<p><a href="https://medium.com/@jacksonadams/my-complete-thoughts-on-diamonds-are-here-5e1a27e2acbe#.th0kk2edm">A more general overview of my proposal is available here on Medium.com</a></p>
+
+<hr>
+
+<h2>
+<a id="definitions" class="anchor" href="#definitions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Definitions</h2>
+
+<h3>
+<a id="participant" class="anchor" href="#participant" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Participant</h3>
+
+<p>Member countries that are participants in The Kimberley Process.
+<a href="http://www.kimberleyprocess.com/en/participants">Here is a current list of participant countries</a></p>
+
+<h3>
+<a id="participant-authority" class="anchor" href="#participant-authority" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Participant Authority</h3>
+
+<p>An authority designated by the Particpant with the power to issue certificates. For example, the <em>Ministry of Mines and Mineral Resources (Sierra Leone)</em>. These authorities do not issue certificates directly, but rather delegate those powers to specific employees, or agents.</p>
+
+<h3>
+<a id="participant-agent" class="anchor" href="#participant-agent" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Participant Agent</h3>
+
+<p>An individual designated by a Participant Authority with the power to issue certificates.</p>
+
+<h3>
+<a id="party" class="anchor" href="#party" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Party</h3>
+
+<p>An entity or individual acting as either the source or destination of the shipment of rough diamonds over international borders, ie a rough diamond trader, manufacturer or mining company.</p>
+
+<hr>
+
+<h2>
+<a id="certificate-issuance-process" class="anchor" href="#certificate-issuance-process" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Certificate issuance process:</h2>
+
+<h3>
+<a id="1-a-certificate-is-created-by-the-exporting-party-with-references-to" class="anchor" href="#1-a-certificate-is-created-by-the-exporting-party-with-references-to" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1. A certificate is created by the exporting party, with references to:</h3>
+
+<ul>
+<li>the importing party we are sending the shipment to</li>
+<li>the source participant</li>
+<li>the destination participant</li>
+</ul>
+
+<pre lang="solidity"><code>//Certificate.sol:
+    function Certificate(address _kpcs,
+        address _exporter,
+        address _importer,
+        address _participantSource,
+        address _participantDestination)
+    ...
+}
+</code></pre>
+
+<p>Each certificate must contain the following data:</p>
+
+<ol>
+<li>
+<p>Participants</p>
+
+<ul>
+<li>
+<em>Origins:</em> geological origins where goods were mined from. <em>Note: This value is not set directly, but is derived from the origins of the parsels.</em>
+</li>
+<li>
+<em>Source:</em> participant country the shipment is being sent from.</li>
+<li>
+<em>Destination:</em> participant country the shipment is being sent to.</li>
+</ul>
+</li>
+<li>
+<p>Agents</p>
+
+<ul>
+<li>
+<em>Exporting:</em> agent delegated by source participant's exporting authority the power to sign certificates.</li>
+<li>
+<em>Importing:</em> agent delegated by destination participant's importing authority the power to sign certificates.</li>
+</ul>
+</li>
+<li>
+<p>Parties</p>
+
+<ul>
+<li>
+<em>Exporting:</em> entity or individual goods are being sent from</li>
+<li>
+<em>Importing:</em> entity or individual goods are being sent to</li>
+</ul>
+</li>
+<li>
+<p>Parsels</p>
+
+<ul>
+<li>An array consisting of parsels of goods included in the shipment. Data includes:
+
+<ul>
+<li>carats</li>
+<li>value</li>
+<li>geological origins</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+
+<h3>
+<a id="2-parsels-are-added-to-the-certificate" class="anchor" href="#2-parsels-are-added-to-the-certificate" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>2. Parsels are added to the certificate:</h3>
+
+<pre lang="solidity"><code>//Certificate.sol
+function addParsel(uint carats,
+    uint value,
+    address[] origins) {
+        ...
+}
+</code></pre>
+
+<p>Each parsel contains:</p>
+
+<ul>
+<li>Carats</li>
+<li>Assessed value</li>
+<li>Addresses of participant countries of geological origins</li>
+</ul>
+
+<p>Finally, the creator must call: <code>Certificate.completedAddingParsels</code> to complete the parsel addition process, and request the authorities and parties to sign the certificate</p>
+
+<h3>
+<a id="3-await-signatures-from" class="anchor" href="#3-await-signatures-from" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>3. Await signatures from:</h3>
+
+<ol>
+<li>Importing party</li>
+<li>Exporting authority's agent</li>
+<li>Importing authority's agent</li>
+</ol>
+
+<pre lang="solidity"><code>//Certificate.sol
+function sign() {
+    ...
+}
+</code></pre>
+
+<p>Upon receipt of the last required signature (order is unimportant), the certificate is issued and shipment is cleared for the final step: validation.</p>
+
+<h3>
+<a id="4-certificate-must-be-added-to-the-main-instance-of-kpcs" class="anchor" href="#4-certificate-must-be-added-to-the-main-instance-of-kpcs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>4. Certificate must be added to the main instance of KPCS.</h3>
+
+<p>This ensures that all participants noted on the certificate are recognized by the main instance of KPCS, therefore validating the certificate and adding a reference to it to from the main KPCS instance.</p>
+
+<h3>
+<a id="5-importing-authority-marks-shipment-as-received" class="anchor" href="#5-importing-authority-marks-shipment-as-received" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>5. Importing authority marks shipment as received:</h3>
+
+<pre lang="solidity"><code>//Certificate.sol:
+function markAsReceived() {
+    ...
+}
+</code></pre>
+
+<p>Upon acknowleged receipt of the shipment, the importing authority marks the certificate as received, completing the certificate.
+Note: according to the KPCS Core Document, this step is optional.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/triage/KPCSEthereum">KPCS Ethereum</a> is maintained by <a href="https://github.com/triage">triage</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
