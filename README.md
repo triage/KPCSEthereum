@@ -8,7 +8,7 @@ __My complete thoughts on diamonds, the diamond industry and The Kimberley Proce
 
 ---
 
-##About
+## About
 
 [The Kimberley Process](http://www.kimberleyprocess.com) (KP) is a joint government, industry and civil society initiative to stem the flow of conflict diamonds – rough diamonds used by rebel movements to finance wars against legitimate governments.
 
@@ -20,26 +20,26 @@ In order to bring both transparency and integrity to the KP, my proposal is to p
 
 ---
 
-##Definitions
+## Definitions
 
-###Participant
+### Participant
 Member countries that are participants in The Kimberley Process.
 [Here is a current list of participant countries](http://www.kimberleyprocess.com/en/participants)
 
-###Participant Authority
+### Participant Authority
 An authority designated by the Particpant with the power to issue certificates. For example, the _Ministry of Mines and Mineral Resources (Sierra Leone)_. These authorities do not issue certificates directly, but rather delegate those powers to specific employees, or agents.
 
-###Participant Agent
+### Participant Agent
 An individual designated by a Participant Authority with the power to issue certificates.
 
-###Party
+### Party
 An entity or individual acting as either the source or destination of the shipment of rough diamonds over international borders, ie a rough diamond trader, manufacturer or mining company.
 
 ---
 
-##Certificate issuance process:
+## Certificate issuance process:
 
-###1. A certificate is created by the exporting party, with references to:
+### 1. A certificate is created by the exporting party, with references to:
 - the importing party we are sending the shipment to
 - the source participant
 - the destination participant
@@ -76,7 +76,7 @@ Each certificate must contain the following data:
 		- value
 		- geological origins
 
-###2. Parsels are added to the certificate:
+### 2. Parsels are added to the certificate:
 ```solidity
 //Certificate.sol
 function addParsel(uint carats,
@@ -92,7 +92,7 @@ Each parsel contains:
 
 Finally, the creator must call: `Certificate.completedAddingParsels` to complete the parsel addition process, and request the authorities and parties to sign the certificate
 
-###3. Await signatures from:
+### 3. Await signatures from:
 1. Importing party
 2. Exporting authority's agent
 3. Importing authority's agent
@@ -106,10 +106,10 @@ function sign() {
 
 Upon receipt of the last required signature (order is unimportant), the certificate is issued and shipment is cleared for the final step: validation.
 
-###4. Certificate must be added to the main instance of KPCS.
+### 4. Certificate must be added to the main instance of KPCS.
 This ensures that all participants noted on the certificate are recognized by the main instance of KPCS, therefore validating the certificate and adding a reference to it to from the main KPCS instance.
 
-###5. Importing authority marks shipment as received:
+### 5. Importing authority marks shipment as received:
 
 ```solidity
 //Certificate.sol:
